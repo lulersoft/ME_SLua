@@ -1,0 +1,7 @@
+本目录为web端
+
+请把Assets\StreamingAssets\data.zip 复制到这个目录。
+
+请修改version文件内json参数,status： 0 无更新，1有更新包;force 1强制更新,0不强制更新,downrul 更新包路径
+
+这个status应该是动态生成的，它的值是更具客户端传递上来的版本参数和最新版本比较 来决定是否更新downrul的包。

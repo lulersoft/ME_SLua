@@ -1,0 +1,17 @@
+
+local Vector3 = UnityEngine.Vector3
+local GameObject = UnityEngine.GameObject
+local Profiler = UnityEngine.Profiler
+local Time = UnityEngine.Time
+
+
+function main()
+
+end
+
+local demo={}
+function demo.hello()
+print(">>>>>>>>> hello slua")
+end
+
+return demo

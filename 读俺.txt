@@ -1,0 +1,4 @@
+ME 游戏框架 for slua
+
+最新代码请在 https://github.com/lulersoft/ME_SLua 同步获取
+问题请到Q群 15647305 一起讨论
