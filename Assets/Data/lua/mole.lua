@@ -1,5 +1,6 @@
 --老鼠的脚本
 --小陆 QQ 2604904
+--https://github.com/lulersoft
 
 local mole={}
 local this
@@ -58,7 +59,8 @@ function  mole.onClick(go)
 	LeanTween.cancel(gameObject)	
 
 	--停止1秒后，缩回洞里
-	this:RunCoroutine(WaitForSeconds(1),mole.comIn,nil)
+	--this:RunCoroutine(WaitForSeconds(1),mole.comIn,nil)
+	this:LuaInvoke(1,mole.comIn,nil)
 		
 	--停止播放动画
 	animator.enabled=false

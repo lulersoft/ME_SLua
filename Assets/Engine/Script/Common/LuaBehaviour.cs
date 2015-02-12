@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -155,7 +155,7 @@ public class LuaBehaviour : MonoBehaviour
             table.Dispose();
         }
     }
-
+/*
     public IEnumerator RunCoroutine()
     {
         object result = new object();
@@ -163,7 +163,7 @@ public class LuaBehaviour : MonoBehaviour
         result = CallMethod("RunCoroutine");
         return (IEnumerator)result;
     }
-
+*/
     //加载脚本文件
     public void DoFile(string fn)
     {
@@ -211,6 +211,25 @@ public class LuaBehaviour : MonoBehaviour
             }
         }
     }
+
+    //延迟执行
+    public void LuaInvoke(float delaytime,LuaFunction func,params object[] args)
+    {
+        StartCoroutine(doInvoke(delaytime, func, args));
+    }
+    private IEnumerator doInvoke(float delaytime, LuaFunction func, params object[] args)
+    {
+        yield return new  WaitForSeconds(delaytime);
+        if (args != null)
+        {
+            func.call(args);
+        }
+        else
+        {
+            func.call(); 
+        }
+    }
+
     //协程
     public void RunCoroutine(YieldInstruction ins, LuaFunction func, params System.Object[] args)
     {

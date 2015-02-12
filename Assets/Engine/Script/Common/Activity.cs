@@ -18,29 +18,6 @@ public class Activity : LuaBehaviour
         InitAsstes(); 
     }
 
-    //public int outVal()
-    //  {
-    //      return 0;
-    //  }
-      public int outVal(out int val)
-      {
-          val = 5;
-          return 3;
-      }
-
-      public int outVal(out int val, int val2)
-      {
-          val = 5;
-          return val2;
-      }
-
-      public int outVal(int val, ref int val2)
-      {
-          val2 = val + val2;
-          return val;
-      }
-
-
     IEnumerator loadStreamingAssets()
     {
         string sorucefilename = "data.zip";
@@ -48,9 +25,6 @@ public class Activity : LuaBehaviour
         string log = "";
 
         string _name = "main.lua";
-        //Ray ray=Camera.main.ScreenPointToRay(Input.mousePosition);
-      
-        //Physics.Raycast( ray.origin,ray.direction,)
 
         byte[] bytes = null;
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
@@ -123,14 +97,11 @@ public class Activity : LuaBehaviour
 
             yield return new WaitForEndOfFrame();
 
-            //加载入口文件 main.lua
-            DoFile(_name);
-
-            yield return new WaitForEndOfFrame();           
-
             log += string.Format("\n{0} created!  ", "res");
-
             Debug.Log(log);
+
+            //加载入口文件 main.lua
+            DoFile(_name);   
         }
     }
     void InitAsstes()
@@ -148,7 +119,7 @@ public class Activity : LuaBehaviour
             DoFile(_name); 
         }
     }
-
+    //重置框架,相当于重新启动游戏
     public void ReStart()
     {
         if (table != null)
