@@ -193,7 +193,6 @@ public class LuaCodeGen : MonoBehaviour
     {
         
         List<Type> cust = new List<Type>{
-             typeof(LeanTweenType),
             typeof(System.Func<int>),
             typeof(System.Action<int,string>),
             typeof(System.Action<int, Dictionary<int,object>>),

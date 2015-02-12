@@ -6,38 +6,45 @@ using System.Reflection;
 using System;
 using System.IO;
 [CustomLuaClassAttribute]
-public class Lua : IDisposable {     
-    private LuaState luaState;
+public class Lua /*: IDisposable */{     
+    public LuaState luaState;
+    static LuaSvrGameObject lgo;
 
     public Lua()
     {
+
         luaState = new LuaState();
         LuaState.loaderDelegate += luaLoader;
-        LuaObject.init(luaState.handle);
+        LuaObject.init(luaState.L);
         bind("BindUnity");
         bind("BindUnityUI");
         bind("BindCustom");
 
         GameObject go = new GameObject("LuaSvrProxy");
-        LuaSvrGameObject lgo = go.AddComponent<LuaSvrGameObject>();
+        lgo = go.AddComponent<LuaSvrGameObject>();
         GameObject.DontDestroyOnLoad(go);
         lgo.state = luaState;
+        lgo.onUpdate = this.tick;
 
-        string import = @"
-function import(name)
-local t=_G[name]
-for k,v in pairs(t) do
-_G[k]=v
-end
-end
-";
-        if (LuaDLL.luaL_dostring(luaState.L, import) != 0)
-        {
-            Debug.LogError("import function err.");
-        }
+        LuaTimer.reg(luaState.L);
+        LuaCoroutine.reg(luaState.L, lgo);       
+    }
 
-        if (LuaDLL.lua_gettop(luaState.handle) != 0)
-              Debug.LogError("Some function not remove temp value from lua stack.");
+
+    void bind(string name)
+    {
+        MethodInfo mi = typeof(LuaObject).GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+        if (mi != null) mi.Invoke(null, new object[] { luaState.L });
+        else if (name == "BindUnity") Debug.LogError(string.Format("Miss {0}, click SLua=>Make to regenerate them", name));
+    }
+
+    void tick()
+    {
+        if (LuaDLL.lua_gettop(luaState.L) != 0)
+            Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
+
+        luaState.checkRef();
+        LuaTimer.tick(Time.deltaTime);
     }
 
     public IntPtr handle
@@ -69,12 +76,7 @@ end
         return bytes;
     }
 
-    void bind(string name)
-    {
-        MethodInfo mi = typeof(LuaObject).GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-        if (mi != null) mi.Invoke(null, new object[] { luaState.handle });
-        else if (name == "BindUnity") Debug.LogError(string.Format("Miss {0}, click SLua=>Make to regenerate them", name));
-    }
+ 
 
     public void Dispose()
     {       
@@ -83,9 +85,11 @@ end
 
     public object DoFile(string fn)
     {
-        return luaState.doFile(fn); 
-    }  
-   
+         return luaState.doFile(fn); 
+    }
+
+
+
     public object this[string path]
     {
         get

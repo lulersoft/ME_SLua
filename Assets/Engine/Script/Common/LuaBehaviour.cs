@@ -24,7 +24,7 @@ public class LuaBehaviour : MonoBehaviour
 
     protected Lua env
     {
-        get
+        get 
         {
             return API.env;
         }
@@ -34,7 +34,7 @@ public class LuaBehaviour : MonoBehaviour
         if (MissionList.Count > 0)
         {
             MissionPack pack = MissionList[0];
-            MissionList.RemoveAt(0);
+            MissionList.RemoveAt(0); 
             pack.Call();
         }
 
@@ -171,10 +171,11 @@ public class LuaBehaviour : MonoBehaviour
         {
             object p = env.DoFile(fn);
             object[] chunk = (object[])p;
-
-            if (chunk != null && chunk[chunk.Length - 1] != null && (chunk[chunk.Length - 1] is LuaFunction))
+           
+            if (chunk != null && chunk[chunk.Length - 1] != null && (chunk[chunk.Length - 1] is LuaTable))
             {
                 table = (LuaTable)chunk[chunk.Length - 1];
+          
                 table["this"] = this;
                 table["transform"] = transform;
                 table["gameObject"] = gameObject;
@@ -183,6 +184,7 @@ public class LuaBehaviour : MonoBehaviour
 
                 isLuaReady = true;
             }
+           
         }
         catch (System.Exception e)
         {

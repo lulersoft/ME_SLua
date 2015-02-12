@@ -28,7 +28,7 @@ using LuaInterface;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[AttributeUsage(AttributeTargets.Class)]
+[AttributeUsage(AttributeTargets.Class|AttributeTargets.Enum|AttributeTargets.Struct)]
 public class CustomLuaClassAttribute : System.Attribute
 {
     public CustomLuaClassAttribute()
@@ -50,6 +50,7 @@ public class StaticExportAttribute : System.Attribute
 {
 	public StaticExportAttribute() 
 	{
+		//
 	}
 }
 
@@ -321,20 +322,28 @@ return index
             LuaDLL.lua_setfield(l, LuaIndexes.LUA_REGISTRYINDEX, self.AssemblyQualifiedName);
         }
 
-        public static void addMember(IntPtr l, ref List<LuaCSFunction> list, LuaCSFunction func, string name)
+        public static void reg(IntPtr l,LuaCSFunction func, string ns)
+        {
+            newTypeTable(l, ns);
+            LuaDLL.lua_pushstdcallcfunction(l, func);
+            LuaDLL.lua_setfield(l, -2, func.Method.Name);
+            LuaDLL.lua_pop(l, 1);
+        }
+
+        protected static void addMember(IntPtr l, ref List<LuaCSFunction> list, LuaCSFunction func, string name)
         {
             list.Add(func);
             LuaDLL.lua_pushstdcallcfunction(l, func);
             LuaDLL.lua_setfield(l, -2, name);
         }
 
-        public static void addMember(IntPtr l, LuaCSFunction func, string name)
+        protected static void addMember(IntPtr l, LuaCSFunction func, string name)
         {
             LuaDLL.lua_pushstdcallcfunction(l, func);
             LuaDLL.lua_setfield(l, -2, name);
         }
 
-        public static void addMember(IntPtr l, LuaCSFunction func)
+        protected static void addMember(IntPtr l, LuaCSFunction func)
         {
             LuaDLL.lua_pushstdcallcfunction(l, func);
             string name = func.Method.Name;
@@ -347,14 +356,14 @@ return index
                 LuaDLL.lua_setfield(l, -2,func.Method.Name);
         }
 
-        public static void addMember(IntPtr l, LuaCSFunction func, bool instance)
+        protected static void addMember(IntPtr l, LuaCSFunction func, bool instance)
         {
             LuaDLL.lua_pushstdcallcfunction(l, func);
             string name = func.Method.Name;
             LuaDLL.lua_setfield(l, instance?-2:-3, name);
         }
 
-        public static void addMember(IntPtr l, string name, LuaCSFunction get, LuaCSFunction set, bool instance=true)
+        protected static void addMember(IntPtr l, string name, LuaCSFunction get, LuaCSFunction set, bool instance=true)
         {
             int t = instance ? -2 : -3;
 
@@ -374,7 +383,7 @@ return index
             LuaDLL.lua_setfield(l, t, name);
         }
 
-        public static void addMember(IntPtr l, int v, string name)
+        protected static void addMember(IntPtr l, int v, string name)
         {
             LuaDLL.lua_pushinteger(l, v);
             LuaDLL.lua_setfield(l, -2, name);
@@ -442,7 +451,9 @@ return index
                     return t == typeof(Single) || t == typeof(double) || t == typeof(int) || t == typeof(Int16)
                         || t == typeof(UInt16) || t == typeof(UInt32) || t == typeof(byte) || t == typeof(Int64) || t.IsEnum;
                 case LuaTypes.LUA_TUSERDATA:
-                    return true;
+                    object o=checkObj(l, p);
+                    Type ot = o.GetType();
+                    return ot == t || ot.IsSubclassOf(t);
                 case LuaTypes.LUA_TSTRING:
                     return t.Name == "String";
                 case LuaTypes.LUA_TBOOLEAN:
