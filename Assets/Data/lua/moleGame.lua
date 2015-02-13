@@ -188,7 +188,7 @@ function game.onLoadComplete(uri,bundle)
         	lb:DoFile("mole")
 
         	--获取绑定的lua脚本
-        	local mole_script=lb:GetChunk()
+        	local mole_script=lb:GetChunk()        	
         	table.insert(moleArr,mole_script)        	
 
  		end	
@@ -239,7 +239,7 @@ function game.moleComeOut()
 	local idx=math.floor(8 * math.random())+1
 	local mole=moleArr[idx]
 		
-	if mole then
+	if mole and gameOver==false then
 		if mole.status==1 then
 			game.moleComeOut()
 		else
