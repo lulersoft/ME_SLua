@@ -329,7 +329,7 @@ public class LuaBehaviour : MonoBehaviour
 }
 
 [CustomLuaClassAttribute]
-public class MissionPack
+public struct MissionPack
 {
     public LuaFunction func;
     public object[] args;
