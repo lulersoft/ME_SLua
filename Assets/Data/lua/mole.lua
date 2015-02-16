@@ -46,11 +46,6 @@ end
 
 function  mole.onClick(go)
 
-	print(this:GetChunk())
-	print(mole)
-	
-	Debug.Log("onClick:"..go.name ..",live="..tostring(mole.live))
-
 	--如果已经挂了,返回
 	if mole.live==0 then 
 		return
