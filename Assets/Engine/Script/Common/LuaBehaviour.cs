@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -16,7 +16,10 @@ using LuaInterface;
 [CustomLuaClassAttribute]
 public class LuaBehaviour : MonoBehaviour
 {
+	[System.NonSerialized]
     public bool usingUpdate = false;
+    [System.NonSerialized]
+    public bool usingFixedUpdate = false;
     protected bool isLuaReady = false;
 
     protected LuaTable table;
@@ -29,6 +32,7 @@ public class LuaBehaviour : MonoBehaviour
             return API.env;
         }
     }
+
     protected void Update()
     {
         if (MissionList.Count > 0)
@@ -44,16 +48,19 @@ public class LuaBehaviour : MonoBehaviour
         }
     }
 
+    protected void FixedUpdate()
+    {
+        if (usingFixedUpdate)
+        {
+            CallMethod("FixedUpdate");
+        }
+    }
+
     public void AddMission(LuaFunction func, params object[] args)
     {
         MissionList.Add(new MissionPack(func, args));
     }
-
-    public void Hello(LuaFunction func)
-    {
-        func.call();
-    }
-
+ 
     public string AssetPath
     {
         get
