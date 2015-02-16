@@ -1,4 +1,4 @@
-﻿﻿using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,7 +106,7 @@ public class LuaBehaviour : MonoBehaviour
 
     IEnumerator onLoadBundle(string name, Callback<string, AssetBundle> handler)
     {
-        string uri = "file:///" + AssetPath + name.ToLower() + ".assetbundle";
+        string uri = "file:///" + AssetPath + name + ".assetbundle";
 
         WWW www = new WWW(uri);
         yield return www;
