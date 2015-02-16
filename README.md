@@ -3,7 +3,7 @@
 
 基于https://github.com/pangweiwei/slua
 
-整理：小陆(QQ2604904)
+整理：小陆(QQ2604904) 参与者：顶梁猪（QQ756500)
 
 ##框架目标
 
