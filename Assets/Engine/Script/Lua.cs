@@ -9,6 +9,7 @@ using System.IO;
 public class Lua /*: IDisposable */{     
     public LuaState luaState;
     static LuaSvrGameObject lgo;
+    bool errorReported = false;
 
     public Lua()
     {
@@ -19,6 +20,7 @@ public class Lua /*: IDisposable */{
         bind("BindUnity");
         bind("BindUnityUI");
         bind("BindCustom");
+        bind("BindExtend"); // if you want to extend slua, can implemented BindExtend function like BindCustom etc.
 
         GameObject go = new GameObject("LuaSvrProxy");
         lgo = go.AddComponent<LuaSvrGameObject>();
@@ -27,7 +29,7 @@ public class Lua /*: IDisposable */{
         lgo.onUpdate = this.tick;
 
         LuaTimer.reg(luaState.L);
-        LuaCoroutine.reg(luaState.L, lgo);       
+        LuaCoroutine.reg(luaState.L, lgo);    
     }
 
 
@@ -40,8 +42,11 @@ public class Lua /*: IDisposable */{
 
     void tick()
     {
-        if (LuaDLL.lua_gettop(luaState.L) != 0)
+        if (LuaDLL.lua_gettop(luaState.L) != 0 && !errorReported)
+        {
             Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
+            errorReported = true;
+        }
 
         luaState.checkRef();
         LuaTimer.tick(Time.deltaTime);
@@ -74,9 +79,7 @@ public class Lua /*: IDisposable */{
         fs.Read(bytes, 0, bytes.Length);
         fs.Close();
         return bytes;
-    }
-
- 
+    } 
 
     public void Dispose()
     {       
@@ -87,8 +90,6 @@ public class Lua /*: IDisposable */{
     {
          return luaState.doFile(fn); 
     }
-
-
 
     public object this[string path]
     {

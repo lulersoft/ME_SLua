@@ -139,8 +139,6 @@ public class LuaBehaviour : MonoBehaviour
         }
     }
 
-
-
     public void DestroyMe()
     {
         Destroy(gameObject);
@@ -169,14 +167,13 @@ public class LuaBehaviour : MonoBehaviour
     {
         try
         {
-            object p = env.DoFile(fn);
-            object[] chunk = (object[])p;
-           
-            if (chunk != null && chunk[chunk.Length - 1] != null && (chunk[chunk.Length - 1] is LuaTable))
+            object chunk = env.DoFile(fn);
+                      
+            if (chunk != null  && (chunk is LuaTable))
             {
-                table = (LuaTable)chunk[chunk.Length - 1];
+                table = (LuaTable)chunk;
           
-                table["this"] = this;
+                table["this"] = this;              
                 table["transform"] = transform;
                 table["gameObject"] = gameObject;
 
@@ -184,7 +181,7 @@ public class LuaBehaviour : MonoBehaviour
 
                 isLuaReady = true;
             }
-           
+          
         }
         catch (System.Exception e)
         {

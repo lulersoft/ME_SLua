@@ -25,7 +25,7 @@ function main.Start()
 	AssetRoot=this.AssetRoot	
 
 	--检测更新 
-    main.checkVersion() 
+    main.checkVersion()     
 
     --性能测试
  	--main.testdemo()

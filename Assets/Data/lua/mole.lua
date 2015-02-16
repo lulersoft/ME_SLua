@@ -19,6 +19,8 @@ local to
 mole.status = 0 	--1 出洞,0 回洞
 mole.live = 1 		--1 活着,0 死了
 
+local live=1
+
 function mole.Start()
 	this=mole.this
 	transform=mole.transform
@@ -32,13 +34,9 @@ function mole.Start()
 
 	sprite4=MoleAtlas:Load("Mole04")
 
-
 	EventListener.Get(gameObject).onClick=mole.onClick
 
 end
-
-mole.status= status
-mole.live=live
 
 function mole.reset()
 	mole.live=1
@@ -47,7 +45,11 @@ function mole.reset()
 end
 
 function  mole.onClick(go)
-	Debug.Log("onClick")
+
+	print(this:GetChunk())
+	print(mole)
+	
+	Debug.Log("onClick:"..go.name ..",live="..tostring(mole.live))
 
 	--如果已经挂了,返回
 	if mole.live==0 then 
