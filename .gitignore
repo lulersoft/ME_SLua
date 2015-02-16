@@ -4,3 +4,4 @@ Temp/*
 *.userprefs
 
 *.sln
+LuaObject/*
