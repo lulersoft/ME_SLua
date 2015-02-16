@@ -4,4 +4,4 @@ Temp/*
 *.userprefs
 
 *.sln
-LuaObject/*
+Assets/Slua/LuaObject/*
