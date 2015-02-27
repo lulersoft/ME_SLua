@@ -113,15 +113,7 @@ public class LuaBehaviour : MonoBehaviour
 
     IEnumerator onLoadBundle(string name, Callback<string, AssetBundle> handler)
     {
-        string uri = "";
-        if (name.LastIndexOf(".") != -1)
-        {
-            uri = "file:///" + AssetPath + name;
-        }
-        else
-        {
-            uri = "file:///" + AssetPath + name + ".assetbundle";
-        }
+        string uri = "file:///" + AssetPath + name + ".assetbundle";
 
         WWW www = new WWW(uri);
         yield return www;
