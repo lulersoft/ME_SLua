@@ -37,19 +37,7 @@ namespace SLua
         {
             mb = m;
             reg(l, Yield, "UnityEngine");
-            reg(l, create, "coroutine");
         }
-
-        [MonoPInvokeCallback(typeof(LuaCSFunction))]
-        static public int create(IntPtr l)
-        {
-            LuaDLL.luaL_checktype(l, 1, LuaTypes.LUA_TFUNCTION);
-            IntPtr nl = LuaDLL.lua_newthread(l);
-            LuaDLL.lua_pushvalue(l, 1);  /* move function to top */
-            LuaDLL.lua_xmove(l, nl, 1);  /* move function from L to NL */
-            return 1;
-        }
-
 
         [MonoPInvokeCallback(typeof(LuaCSFunction))]
         static public int Yield(IntPtr l)
@@ -59,11 +47,19 @@ namespace SLua
 
 	            Action act = () =>
 	            {
+#if LUA_5_3
+					LuaDLL.lua_resume(l,IntPtr.Zero,0);
+#else
 	                LuaDLL.lua_resume(l, 0);
+#endif
 	            };
 
 	            mb.StartCoroutine(yieldReturn(y,act));
-	            return LuaDLL.lua_yield(l, 0);
+#if LUA_5_3
+				return LuaDLL.luaS_yield(l, 0);
+#else
+                return LuaDLL.lua_yield(l, 0);
+#endif
 			}
 			catch(Exception e) {
 				LuaDLL.luaL_error(l,e.ToString());

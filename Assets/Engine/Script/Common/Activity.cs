@@ -9,9 +9,10 @@ using SLua;
 /// </summary>
 [CustomLuaClassAttribute]
 public class Activity : LuaBehaviour
-{  
+{
 
-    bool isDebug = false;
+   protected bool isDebug = false;
+   protected string _name = "main.lua";
 
     void Awake()
     {       
@@ -22,9 +23,7 @@ public class Activity : LuaBehaviour
     {
         string sorucefilename = "data.zip";
         string filename = Application.persistentDataPath + "/" + sorucefilename;
-        string log = "";
-
-        string _name = "main.lua";
+        string log = "";       
 
         byte[] bytes = null;
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
@@ -105,8 +104,7 @@ public class Activity : LuaBehaviour
         }
     }
     void InitAsstes()
-    {
-        string _name = "main.lua";
+    {       
         string mainfile = Application.persistentDataPath + "/lua/"+_name;
         //如果入口主main.lua未找到       
         if (!File.Exists(mainfile) || isDebug)

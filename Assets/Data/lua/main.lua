@@ -106,11 +106,14 @@ function main.OnDownloadProgressChanged(sender,e)
 	this:AddMission(main.OnDownLoadProgress,e)
 end
 function main.OnDownLoadProgress(e)
+	--[[
 	local str=string.format("downloaded %s of %s bytes. %s complete...",    
         e.BytesReceived, 
         e.TotalBytesToReceive,
         e.ProgressPercentage) 
 	Debug.Log(str)
+	--]]
+	Debug.Log("downloading: "..tostring(e.ProgressPercentage).."% complete...")
 end
 --下载完成
 function main.OnDownloadCompleted(sender,e)
