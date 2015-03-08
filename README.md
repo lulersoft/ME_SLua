@@ -1,16 +1,23 @@
 #ME 游戏框架 for slua
 <b>ME_SLua是一个基于unity+slua技术的全LUA免费开源（带有资源下载功能）游戏框架</b>
 
-基于https://github.com/pangweiwei/slua
-
 整理：小陆(QQ2604904) 参与者：顶梁猪（QQ756500)
 
 ##框架目标
 
 <b>使用lua 编写2D,3D全平台运行游戏，一次编写，到处发布</b>
 
+##本框架需要以下条件
+
+1)unity3d 版本为 5.0以上
+
+2)slua项目 地址 https://github.com/pangweiwei/slua
+
+请自行下载slua覆盖到本u3d工程项目目录
+
 ##核心思路
-ME框架的思路就是 一个GameObject 对应挂个LuaBehaviour.cs脚本，这个LuaBehaviour.cs脚本DoFile一个lua脚本，lua脚本和LuaBehaviour.cs和GameObject都可以交互控制。
+
+ME框架的思路就是 一个GameObject 对应挂个LuaBehaviour.cs脚本，这个LuaBehaviour.cs脚本DoFile一个lua脚本，lua脚本和LuaBehaviour.cs交互控制。
 
 各各GameObject间通过Lua 消息进行通信。
 
@@ -28,7 +35,7 @@ Assets/Atlas 将要打包的ui图片
 
 Assets/Builds 将要打包的预置物
 
-Assets/Data 为资源输出目录和lua脚本目录，此文件夹将被压缩为zip放入Assets/StreamingAssets
+Assets/Data 升级包源目录（含全部资源和lua脚本），此文件夹将被压缩为zip放入Assets/StreamingAssets
 
 Assets/StreamingAssets 为zip更新包输出目录，在执行ME Tools 菜单相关选项生成后，请把一份上传到wwwroot服务器目录内，供客户端下载更新。
 
@@ -53,19 +60,23 @@ wwwroot目录为web服务器目录，请上传到您的web服务器 请修改ver
 
 ##地鼠游戏资源打包以及编辑脚本测试使用帮助
 
-1.执行编辑器菜单 ME tools/清理缓存,让一切重新开始.
+请先自行下载slua项目覆盖到本u3d工程项目目录
 
-2.执行编辑器菜单 ME tools/把Atlas目录下的.png图片作为图集资源并放入Data目录.
+1.执行编辑器菜单 ME tools/1.清理缓存,让一切重新开始.
 
-3.在Project窗体内 鼠标点选选中 Assets/Builds/GUI,然后 执行编辑器菜单 ME tools/独立打包选中目录下的各个对象并放入Data目录
+2.执行编辑器菜单 ME tools/2.制作资源包 : 自动生成资源包并放入Asset->Data->asset目录 (for Unity5.0+)".
 
-4.执行编辑器菜单 ME tools/制作更新包：把Data目录压缩为一个zip包并放入StreamingAssets目录
+3.执行编辑器菜单 ME Tools/3.制作更新包 : 把Asset->Data目录压缩为一个zip包并放入StreamingAssets目录
+
+
 
 通过以上步骤完成资源和升级包的制作了。
 
 如果在编辑器进行代码修改或者资源修改，请重复以上步骤。
 
-如果仅仅修改 Assets/Data/lua 下的逻辑脚本，您只需要执行以上的1和4步骤。
+如果仅仅修改 Assets/Data/lua 下的逻辑脚本，您只需要执行编辑器菜单：
+
+ME Tools/4.同步到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存。
 
 
 

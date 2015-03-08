@@ -168,7 +168,7 @@ public class MePackager
     //luac for windows
     static void runLuac()
     {
-#if UNITY_STANDALONE_WIN
+#if UNITY_EDITOR_WIN
         string runPath = Application.dataPath + "/Engine/Tools/run.bat";
         string luacPath = Application.dataPath+"/Engine/Tools/luac.exe";
         string encodePath = Application.dataPath + "/Data/lua/";
