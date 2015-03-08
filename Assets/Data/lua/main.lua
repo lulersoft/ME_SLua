@@ -1,18 +1,17 @@
 --主逻辑 
 --升级检测 启动游戏逻辑
 --小陆 QQ 2604904
---https://github.com/lulersoft
+--https://github.com/lulersoft/ME
 
 import 'UnityEngine'
-
 --以上整个项目只需要导入一次
 
-json = require "json.dkjson"
+local json = require "json.dkjson"
 
 version=1
 appid=1
 weburl="http://192.168.1.30/version" --升级网址
-AssetRoot=nil
+AssetRoot=nil --资源目录
 
 
 local this
@@ -22,20 +21,33 @@ local main={}
 function main.Start()
 
 	this=main.this
-	AssetRoot=this.AssetRoot	
+	AssetRoot=API.AssetRoot	
 
 	--检测更新 
-    main.checkVersion()     
+    --main.checkVersion() 
 
     --性能测试
  	--main.testdemo()
+
+ 	--直接启动打地鼠游戏
+ 	main.RunMoleGame()
+
+ 	--Debug.Log(LuaBehaviour)
 end
 
 --性能测试
 function main.testdemo()
 	local game = GameObject("Performance")
-	local lb = game:AddComponent("LuaBehaviour")
+	--local lb = game:AddComponent("LuaBehaviour")
+	local lb = API.AddComponent(game,"LuaBehaviour")
 	lb:DoFile("demo")
+end
+
+--打地鼠游戏
+function main.RunMoleGame( )
+	local game = GameObject("moleGame")
+	local lb = API.AddComponent(game,"LuaBehaviour")
+	lb:DoFile("moleGame")
 end
 
 --检查更新
@@ -92,13 +104,7 @@ function main.StartGame()
 	this:AddMission(main.RunMoleGame,nil)
 end
 
-function main.RunMoleGame( )
-	Debug.Log("启动打地鼠游戏")
 
-	local game = GameObject("moleGame")
-	local lb = game:AddComponent("LuaBehaviour")
-	lb:DoFile("moleGame")
-end
 
 --下载进度回调
 function main.OnDownloadProgressChanged(sender,e)
@@ -106,14 +112,11 @@ function main.OnDownloadProgressChanged(sender,e)
 	this:AddMission(main.OnDownLoadProgress,e)
 end
 function main.OnDownLoadProgress(e)
-	--[[
 	local str=string.format("downloaded %s of %s bytes. %s complete...",    
         e.BytesReceived, 
         e.TotalBytesToReceive,
         e.ProgressPercentage) 
 	Debug.Log(str)
-	--]]
-	Debug.Log("downloading: "..tostring(e.ProgressPercentage).."% complete...")
 end
 --下载完成
 function main.OnDownloadCompleted(sender,e)

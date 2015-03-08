@@ -16,6 +16,14 @@ public class API  {
 
     public static Hashtable BundleTable=new Hashtable();
     private static Lua lua;
+
+    //资源加密解密常量定义
+    public static int Encrypt_Len = 256;
+    public static string Encrypt_Key = "this is source encryption key for me game frame,please custom this key string";
+
+    //是否启用调试
+    public static bool Debug = true;    
+
     public static Lua env
     {
         get
@@ -29,6 +37,56 @@ public class API  {
             return lua;
         }
     }
+
+    public static string AssetRoot
+    {
+        get
+        {
+            return Application.persistentDataPath + "/";
+        }
+    }
+    #region
+    public static void Log(object msg)
+    {
+        if (Debug)
+        {
+            DebugTools.log += msg.ToString() + "\n\r";
+            if (DebugTools.obj == null)
+            {
+                DebugTools.obj = new GameObject("DebugTools");
+                DebugTools.obj.AddComponent<DebugTools>();
+            }
+            UnityEngine.Debug.Log(msg);
+        }
+    }
+
+    public static void LogError(object msg)
+    {
+        Log(msg);
+    }
+
+    public static void LogWarning(object msg)
+    {
+        Log(msg);
+    }
+    #endregion
+
+    public static object AddComponent(GameObject obj, string classname)
+    {
+        Type t = Type.GetType(classname);
+        return obj.AddComponent(t);
+    }
+    public static object AddMissComponent(GameObject obj, string classname)
+    {
+        Type t = Type.GetType(classname);
+        object _out = obj.GetComponent(t);
+        if (_out == null)
+        {
+            _out = obj.AddComponent(t);
+        }
+        return _out;
+    }
+
     //zip压缩
     public static void PackFiles(string filename, string directory)
     {
@@ -119,7 +177,7 @@ public class API  {
         }
         catch (Exception e)
         {
-            Debug.Log("Post err " + e.Message);
+            API.Log("Post err " + e.Message);
         }
          //返回client ，可用 client.CancelAsync(); 中断下载
         return webClient;
@@ -144,7 +202,7 @@ public class API  {
         }
         catch (Exception e)
         {
-            Debug.Log("AsyncDownLoad err:" + e.Message);
+            API.Log("AsyncDownLoad err:" + e.Message);
         }
 
         //返回client ，可用 client.CancelAsync(); 中断下载
@@ -152,24 +210,32 @@ public class API  {
     }
 
    //时钟
-    public static Timer AddTimer(float interval, LuaFunction onTimerHander)
+    public static MeTimer AddTimer(float interval, Callback<MeTimer> onTimerHander)
     {
-        Timer timer = new Timer();
-        timer.Elapsed += (object sender, ElapsedEventArgs e) =>
+        return AddTimer(interval, 0, onTimerHander);
+    }
+    public static MeTimer AddTimer(float interval, int loop, Callback<MeTimer> onTimerHander)
+    {
+        if (LuaMeTimer.obj == null)
         {
-            onTimerHander.call(sender, e);
-        };
-        timer.Interval = interval;
-        timer.Enabled = true;
+            LuaMeTimer.obj = new GameObject("MeLuaTimer");
+            LuaMeTimer.obj.AddComponent<LuaMeTimer>();
+        }
+        MeTimer timer = new MeTimer();
+        timer.onTimer = onTimerHander;
+        timer.interval = interval;
+        timer.loop = loop;
+
+        LuaMeTimer.TimerList.Add(timer);
+
         return timer;
     }
-    
-    public static void KillTimer(Timer timer)
+
+    public static void KillTimer(MeTimer timer)
     {
         if (timer != null)
         {
-            timer.Close();
-            timer.Dispose();
+            timer.close = true;
         }
     }
 
@@ -233,7 +299,86 @@ public class API  {
             throw new Exception("md5file() fail, error:" + ex.Message);
         }
     }
+    //RC4 字符串
+    public static string RC4(string input, string key)
+    {
+        StringBuilder result = new StringBuilder();
+        int x, y, j = 0;
+        int[] box = new int[256];
 
+        for (int i = 0; i < 256; i++)
+        {
+            box[i] = i;
+        }
+
+        for (int i = 0; i < 256; i++)
+        {
+            j = (key[i % key.Length] + box[i] + j) % 256;
+            x = box[i];
+            box[i] = box[j];
+            box[j] = x;
+        }
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            y = i % 256;
+            j = (box[y] + j) % 256;
+            x = box[y];
+            box[y] = box[j];
+            box[j] = x;
+
+            result.Append((char)(input[i] ^ box[(box[y] + box[j]) % 256]));
+        }
+        return result.ToString();
+    }
+
+    //RC4 byte 数组
+    public static byte[] RC4(byte[] input, string key)
+    {
+        byte[] result = new byte[input.Length];
+        int x, y, j = 0;
+        int[] box = new int[256];
+
+        for (int i = 0; i < 256; i++)
+        {
+            box[i] = i;
+        }
+
+        for (int i = 0; i < 256; i++)
+        {
+            j = (key[i % key.Length] + box[i] + j) % 256;
+            x = box[i];
+            box[i] = box[j];
+            box[j] = x;
+        }
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            y = i % 256;
+            j = (box[y] + j) % 256;
+            x = box[y];
+            box[y] = box[j];
+            box[j] = x;
+
+            result[i] = (byte)(input[i] ^ box[(box[y] + box[j]) % 256]);
+        }
+        return result;
+    }
+
+    //局部加密解密
+    public static void Encrypt(ref byte[] input)
+    {
+        if (input.Length > Encrypt_Len)
+        {
+            byte[] tmp = new byte[Encrypt_Len];
+            System.Array.Copy(input, 0, tmp, 0, Encrypt_Len);
+            byte[] de = API.RC4(tmp, Encrypt_Key);
+            for (int i = 0; i < Encrypt_Len; i++)
+            {
+                input[i] = de[i];
+            }
+        }
+    }
     //发射线
     public static object Raycast(Ray ray, out RaycastHit hit)
     {

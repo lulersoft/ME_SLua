@@ -1,0 +1,14 @@
+ManifestFileVersion: 0
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: moleatlas.ab
+      Dependencies: {}
+    Info_1:
+      Name: molepre.ab
+      Dependencies:
+        Dependency_0: moleatlas.ab
+    Info_2:
+      Name: gui.ab
+      Dependencies:
+        Dependency_0: moleatlas.ab

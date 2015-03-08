@@ -1594,8 +1594,8 @@ public static void update() {
 								SpriteRenderer ren = trans.gameObject.GetComponent<SpriteRenderer>();
 								if(ren!=null){
 									tween.from.x = ren.color.a;
-								}else if(trans.gameObject.renderer!=null){
-									tween.from.x = trans.gameObject.renderer.material.color.a;
+								}else if(trans.gameObject.GetComponent<Renderer>()!=null){
+									tween.from.x = trans.gameObject.GetComponent<Renderer>().material.color.a;
 								}
 								break;
 							#endif
@@ -1673,9 +1673,9 @@ public static void update() {
 									tween.from = new Vector3(0.0f, ren2.color.a, 0.0f);
 									tween.diff = new Vector3(1.0f,0.0f,0.0f);
 									tween.axis = new Vector3( ren2.color.r, ren2.color.g, ren2.color.b );
-								}else if(trans.gameObject.renderer!=null){
-									if(trans.gameObject.renderer){
-										Color col = trans.gameObject.renderer.material.color;
+								}else if(trans.gameObject.GetComponent<Renderer>()!=null){
+									if(trans.gameObject.GetComponent<Renderer>()){
+										Color col = trans.gameObject.GetComponent<Renderer>().material.color;
 										tween.from = new Vector3(0.0f, col.a, 0.0f);
 										tween.diff = new Vector3(1.0f,0.0f,0.0f);
 										tween.axis = new Vector3( col.r, col.g, col.b );
@@ -1916,15 +1916,15 @@ public static void update() {
 							if(ren!=null){
 								ren.color = new Color( ren.color.r, ren.color.g, ren.color.b, val);
 							}else{
-								if(trans.gameObject.renderer!=null){
-									foreach(Material mat in trans.gameObject.renderer.materials){
+								if(trans.gameObject.GetComponent<Renderer>()!=null){
+									foreach(Material mat in trans.gameObject.GetComponent<Renderer>().materials){
 		        						mat.color = new Color( mat.color.r, mat.color.g, mat.color.b, val);
 		    						}
 		    					}
 	    						if(trans.childCount>0){
 	    							foreach (Transform child in trans) {
-	    								if(child.gameObject.renderer!=null){
-		    								foreach(Material mat in child.gameObject.renderer.materials){
+	    								if(child.gameObject.GetComponent<Renderer>()!=null){
+		    								foreach(Material mat in child.gameObject.GetComponent<Renderer>().materials){
 				        						mat.color = new Color( mat.color.r, mat.color.g, mat.color.b, val);
 				    						}
 				    					}
@@ -1947,8 +1947,8 @@ public static void update() {
 							Color toColor = tweenColor(tween, val);
 							// Debug.Log("val:"+val+" tween:"+tween+" tween.diff:"+tween.diff);
 							if(tweenAction==TweenAction.COLOR){
-								if(trans.gameObject.renderer!=null){
-									foreach(Material mat in trans.gameObject.renderer.materials){
+								if(trans.gameObject.GetComponent<Renderer>()!=null){
+									foreach(Material mat in trans.gameObject.GetComponent<Renderer>().materials){
 		        						mat.color = toColor;
 		    						}
 		    					}

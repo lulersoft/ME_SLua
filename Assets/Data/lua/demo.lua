@@ -1,5 +1,5 @@
 --性能测试
---https://github.com/lulersoft 
+--https://github.com/lulersoft/ME
 
 local demo={}
 local this
@@ -14,11 +14,12 @@ function demo.Start()
 
 	--添加个照相机
 	local carm=GameObject("carm")
-	carm:AddComponent("Camera")
+	API.AddComponent(carm,"Camera")
+	
 	carm.transform.localPosition=Vector3(9,3,-17)
 
 	--来一束光照亮测试场景
-	local light=carm:AddComponent("Light")
+	local light = API.AddComponent(carm,"Light")
 	light.type=LightType.Directional
 
 	demo.test1()
@@ -37,9 +38,9 @@ end
 function demo.createCube(ii)
 	local cube=GameObject.CreatePrimitive(PrimitiveType.Cube)
 	cube.name=tostring(ii)
-	cube.transform.position = Vector3(10 + r * math.cos((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad))
-	
-	local lb=cube:AddComponent("LuaBehaviour")
+	cube.transform.position = Vector3(10 + r * math.cos((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad))	
+
+	local lb = API.AddComponent(cube,"LuaBehaviour")
 	lb:DoFile("testui2")
 end
 

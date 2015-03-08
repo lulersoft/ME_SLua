@@ -1,5 +1,5 @@
 --性能测试
---https://github.com/lulersoft
+--https://github.com/lulersoft/ME
 local testui2={}
 
 local this
@@ -20,8 +20,7 @@ function testui2.Start()
 
 	--this:Invoke("DestoryMe",35)
 	--35秒后销毁
-	--this:RunCoroutine(WaitForSeconds(35),testui2.DestoryMe,nil)
-	this:LuaInvoke(35,testui2.DestoryMe,nil)
+	this:RunCoroutine(WaitForSeconds(35),testui2.DestoryMe,nil)
 end
 
 function testui2.Update()
