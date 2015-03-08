@@ -35,12 +35,25 @@ public class LuaCodeGen : MonoBehaviour
 {
 
 
-    public static string path = "Assets/SLua/LuaObject/";
-
-    
+    public static string path = "Assets/Slua/LuaObject/";
 
 
-    [MenuItem("SLua/Make")]
+	[InitializeOnLoadMethod]
+	static void OnProjectLoadedInEditor() {
+		bool ok=System.IO.Directory.Exists(path);
+		if(!ok && EditorUtility.DisplayDialog("Slua","Not found lua interface for Unity, generate it now?","Generate","No")) {
+			GenerateAll();
+		}
+	}
+		
+	[MenuItem("SLua/Make ALL")]
+	static public void GenerateAll() {
+		Generate();
+		GenerateUI();
+		Custom();
+	}
+		
+	[MenuItem("SLua/Make UnityEngine")]
     static public void Generate()
     {
         CodeGenerator.InnerTypes.Clear();
@@ -143,6 +156,8 @@ public class LuaCodeGen : MonoBehaviour
         GenerateBind(exports,"BindUnity");
         
         AssetDatabase.Refresh();
+
+		Debug.Log("Generate engine interface finished");
     }
 
     [MenuItem("SLua/Make UI (for Unity4.6+)")]
@@ -182,6 +197,8 @@ public class LuaCodeGen : MonoBehaviour
         GenerateBind(exports, "BindUnityUI");
 
         AssetDatabase.Refresh();
+
+		Debug.Log("Generate UI interface finished");
     }
 
     static public bool IsObsolete(MemberInfo t)
@@ -192,28 +209,25 @@ public class LuaCodeGen : MonoBehaviour
     [MenuItem("SLua/Make custom")]
     static public void Custom()
     {
-        
-        List<Type> cust = new List<Type>{
-            typeof(System.Func<int>),
-            typeof(System.Action<int,string>),
-            typeof(System.Action<int, Dictionary<int,object>>),
-        };
+
+        List<Type> cust = new List<Type>();
+        CustomExport.OnAddCustomClass(ref cust);
 
         // export self-dll
-         Assembly assembly = Assembly.Load("Assembly-CSharp");
-         Type[] types = assembly.GetExportedTypes();
- 
-         foreach (Type t in types)
-         {
-             if (t.GetCustomAttributes(typeof(CustomLuaClassAttribute), false).Length > 0)
-             {
-                 cust.Add(t);
-             }
-         }
+        Assembly assembly = Assembly.Load("Assembly-CSharp");
+        Type[] types = assembly.GetExportedTypes();
+
+        foreach (Type t in types)
+        {
+            if (t.GetCustomAttributes(typeof(CustomLuaClassAttribute), false).Length > 0)
+            {
+                cust.Add(t);
+            }
+        }
 
         // export 3rd dll
         List<string> assemblyList = new List<string>();
-        //assemblyList.Add("NGUI"); 
+        CustomExport.OnAddCustomAssembly(ref assemblyList);
         
         foreach( string assemblyItem in assemblyList )
         {
@@ -244,19 +258,33 @@ public class LuaCodeGen : MonoBehaviour
         GenerateBind(exports,"BindCustom");
         AssetDatabase.Refresh();
         path = oldpath;
+
+		Debug.Log("Generate custom interface finished");
     }
 
     [MenuItem("SLua/Clear Custom")]
     static public void ClearCustom()
     {
-        string[] assets = AssetDatabase.FindAssets("", new string[]{path+"Custom"});
+        clear(new string[]{path+"Custom"});
+        Debug.Log("Clear custom complete.");
+    }
+
+    [MenuItem("SLua/Clear All")]
+    static public void ClearALL()
+    {
+        clear(new string[] { path.Substring(0, path.Length - 1), path + "Custom" });
+        Debug.Log("Clear all complete.");
+    }
+
+    static void clear(string[] paths)
+    {
+        string[] assets = AssetDatabase.FindAssets("", paths);
         foreach (string asset in assets)
         {
             string p = AssetDatabase.GUIDToAssetPath(asset);
             AssetDatabase.DeleteAsset(p);
         }
         AssetDatabase.Refresh();
-        Debug.Log("Clear custom complete.");
     }
 
     static bool Generate(Type t)
@@ -788,7 +816,7 @@ namespace SLua
 
     bool CutBase(Type t)
     {
-        if (t.FullName.Contains("System."))
+        if (t.FullName.StartsWith("System."))
             return true;
         return false;
     }
@@ -824,7 +852,7 @@ namespace SLua
         FieldInfo[] fields = t.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance|BindingFlags.DeclaredOnly);
         foreach (FieldInfo fi in fields)
         {
-            if (DontExport(fi))
+            if (DontExport(fi) || IsObsolete(fi))
                 continue;
 
 			PropPair pp = new PropPair();

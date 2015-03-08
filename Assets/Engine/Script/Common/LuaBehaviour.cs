@@ -80,13 +80,6 @@ public class LuaBehaviour : MonoBehaviour
         }
     }
 
-    public string AssetRoot
-    {
-        get
-        {
-            return Application.persistentDataPath + "/";
-        }
-    }
 
     public void LoadBundle(string fname, Callback<string, AssetBundle> handler)
     {
@@ -138,6 +131,9 @@ public class LuaBehaviour : MonoBehaviour
             yield return new WaitForEndOfFrame();
         }
         byte[] data = www.bytes;
+
+        //资源解密
+        API.Encrypt(ref data);
 
         AssetBundle bundle = AssetBundle.CreateFromMemoryImmediate(data);
 

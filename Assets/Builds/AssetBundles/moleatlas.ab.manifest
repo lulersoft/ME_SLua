@@ -1,0 +1,27 @@
+ManifestFileVersion: 0
+CRC: 3571997504
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 423b58b292994df7217d62952a931ec1
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 75957c18d05791510cbdd301a328d69f
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/Atlas/MoleAtlas/GameBG02.png
+- Assets/Atlas/MoleAtlas/Mole02.png
+- Assets/Atlas/MoleAtlas/Mole04.png
+- Assets/Atlas/MoleAtlas/Mole05.png
+- Assets/Atlas/MoleAtlas/GameBG04.png
+- Assets/Atlas/MoleAtlas/Mole03.png
+- Assets/Atlas/MoleAtlas/Mole01.png
+- Assets/Atlas/MoleAtlas/GameBG01.png
+- Assets/Atlas/MoleAtlas/Mole06.png
+- Assets/Atlas/MoleAtlas/GameBG03.png
+Dependencies: []

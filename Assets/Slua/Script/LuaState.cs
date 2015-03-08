@@ -22,9 +22,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using LuaInterface;
 using UnityEngine;
 using System.IO;
+using System.Text;
 
 namespace SLua
 {
@@ -204,8 +206,14 @@ namespace SLua
         
     }
 
-    public class LuaTable : LuaVar
+    public class LuaTable : LuaVar, IEnumerable<LuaTable.TablePair>
     {
+
+        public struct TablePair
+        {
+            public object key;
+            public object value;
+        }
         public LuaTable(IntPtr l, int r)
             : base(l, r)
         {
@@ -234,6 +242,69 @@ namespace SLua
                 state.setObject(valueref, key, value);
             }
         }
+
+        public class Enumerator : IEnumerator<TablePair>, IDisposable
+        {
+            LuaTable t;
+            int indext=-1;
+            public Enumerator(LuaTable table)
+            {
+                t = table;
+                Reset();
+            }
+
+            public bool MoveNext()
+            {
+                if(indext<0)
+                    return false;
+
+                return LuaDLL.lua_next(t.L, indext) > 0;
+            }
+
+            public void Reset()
+            {
+                LuaDLL.lua_getref(t.L, t.Ref);
+                indext=LuaDLL.lua_gettop(t.L);
+
+                LuaDLL.lua_pushnil(t.L);
+            }
+
+            public void Dispose()
+            {
+                LuaDLL.lua_remove(t.L, indext);
+            }
+
+            public TablePair Current
+            {
+                get
+                {
+                    TablePair p = new TablePair();
+                    p.key = LuaObject.checkVar(t.L, -2);
+                    p.value = LuaObject.checkVar(t.L, -1);
+                    LuaDLL.lua_pop(t.L, 1);
+                    return p;
+                }
+            }
+
+            object IEnumerator.Current
+            {
+                get
+                {
+                    return Current;
+                }
+            }
+        }
+
+        public IEnumerator<TablePair> GetEnumerator()
+        {
+            return new LuaTable.Enumerator(this);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
     }
 
 
@@ -373,21 +444,39 @@ namespace SLua
         internal static int import(IntPtr l)
         {
             LuaDLL.luaL_checktype(l, 1, LuaTypes.LUA_TSTRING);
-            string ns = LuaDLL.lua_tostring(l, 1);
+            string str = LuaDLL.lua_tostring(l, 1);
 
-            LuaDLL.lua_getglobal(l, ns);
-            if (!LuaDLL.lua_istable(l, -1))
+            string[] ns = str.Split('.');
+
+            LuaDLL.lua_pushglobaltable(l);
+
+            for (int n=0; n < ns.Length; n++)
             {
-                LuaDLL.luaL_error(l, "expect %s is type table", ns);
-                return 0;
+                LuaDLL.lua_getfield(l, -1,ns[n]);
+                if (!LuaDLL.lua_istable(l, -1))
+                {
+                    LuaDLL.luaL_error(l, "expect {0} is type table", ns);
+                    return 0;
+                }
+                LuaDLL.lua_remove(l, -2);
             }
 
             LuaDLL.lua_pushnil(l);
             while (LuaDLL.lua_next(l, -2)!=0) 
             {
                 string key = LuaDLL.lua_tostring(l,-2);
+                LuaDLL.lua_getglobal(l, key);
+                if (!LuaDLL.lua_isnil(l, -1))
+                {
+                    LuaDLL.lua_pop(l, 1);
+                    LuaDLL.luaL_error(l,"{0} had existed, import can't overload it.", key);
+                    return 0;
+                }
+                LuaDLL.lua_pop(l, 1);
                 LuaDLL.lua_setglobal(l, key);
             }
+
+            LuaDLL.lua_pop(l, 1);
 
             return 0;
         }
@@ -442,6 +531,13 @@ namespace SLua
 			return 0;
         }
 
+        public object doString(string str)
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes(str);
+
+            return doBuffer(bytes,"temp buffer");
+        }
+
         public object doFile(string fn)
         {
             byte[] bytes = loadFile(fn);
@@ -450,8 +546,13 @@ namespace SLua
 				return null;
 			}
 
+            return doBuffer(bytes,fn);
+        }
+
+        public object doBuffer(byte[] bytes,string fn)
+        {
             LuaDLL.lua_pushstdcallcfunction(L, errorReport);
-			int errfunc = LuaDLL.lua_gettop(L);
+            int errfunc = LuaDLL.lua_gettop(L);
             if (LuaDLL.luaL_loadbuffer(L, bytes, bytes.Length, fn) == 0)
             {
                 if (LuaDLL.lua_pcall(L, 0, LuaDLL.LUA_MULTRET, -2) != 0)
@@ -459,7 +560,7 @@ namespace SLua
                     LuaDLL.lua_pop(L, 1);
                 }
                 LuaDLL.lua_remove(L, errfunc); // pop error function
-				return topObjects(errfunc-1);
+                return topObjects(errfunc - 1);
             }
             else
             {
@@ -467,7 +568,7 @@ namespace SLua
                 Debug.LogError(err);
                 LuaDLL.lua_pop(L, 1);
             }
-			return null;
+            return null;
         }
 
         static byte[] loadFile(string fn)

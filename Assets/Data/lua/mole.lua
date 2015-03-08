@@ -1,6 +1,6 @@
 --老鼠的脚本
 --小陆 QQ 2604904
---https://github.com/lulersoft
+--https://github.com/lulersoft/ME
 
 local mole={}
 local this
@@ -19,8 +19,6 @@ local to
 mole.status = 0 	--1 出洞,0 回洞
 mole.live = 1 		--1 活着,0 死了
 
-local live=1
-
 function mole.Start()
 	this=mole.this
 	transform=mole.transform
@@ -32,7 +30,8 @@ function mole.Start()
 	image=gameObject:GetComponent("Image")
     animator=gameObject:GetComponent("Animator")
 
-	sprite4=MoleAtlas:Load("Mole04")
+	local _text2d=MoleAtlas:LoadAsset("Assets/Atlas/MoleAtlas/Mole04.png")
+	sprite4=Sprite.Create(_text2d,Rect(0,0,56,79),Vector2(0.5,0.5))
 
 	EventListener.Get(gameObject).onClick=mole.onClick
 
@@ -45,6 +44,7 @@ function mole.reset()
 end
 
 function  mole.onClick(go)
+	Debug.Log("onClick")
 
 	--如果已经挂了,返回
 	if mole.live==0 then 
