@@ -12,7 +12,7 @@ public class MePackager
 
 
     [MenuItem("ME Tools/1.清理缓存,让一切重新开始")]
-    static void CleanCacheFiles()
+    public static void CleanCacheFiles()
     {
         string cachePath = API.AssetRoot;
         DirectoryInfo di = new DirectoryInfo(cachePath);
@@ -22,7 +22,7 @@ public class MePackager
     }
 
     [MenuItem("ME Tools/2.制作资源包 : 自动生成资源包并放入Asset->Data->asset目录 (for Unity5.0+)")]
-    static void BuildAssets()
+    public static void BuildAssets()
     {
 
         //复制lua
@@ -61,7 +61,7 @@ public class MePackager
     }
     
     [MenuItem("ME Tools/3.制作更新包 : 把Asset->Data目录压缩为一个zip包并放入StreamingAssets目录")]
-    static void PackFiles()
+    public static void PackFiles()
     {
         //本地测试：建议最后将Assetbundle放在StreamingAssets文件夹下，如果没有就创建一个，因为移动平台下只能读取这个路径
         //StreamingAssets是只读路径，不能写入
@@ -99,7 +99,7 @@ public class MePackager
     }
     */
 
-    static void EncryptFile(string form, string to)
+    public static void EncryptFile(string form, string to)
     {
         FileInfo fi = new FileInfo(form);
         long len = fi.Length;
@@ -124,7 +124,7 @@ public class MePackager
         Debug.Log(to + " ==>ok!!");
     }
 
-    static void EncryptLua()
+    public static void EncryptLua()
     {
 
         string srcPath = Application.dataPath + "/Lua/";
@@ -156,13 +156,13 @@ public class MePackager
           //luac 
          runLuac();
 
+        */
           //rc4 
-         foreach (FileInfo luaFile in di.GetFiles("*.lua", SearchOption.AllDirectories))
+        foreach (FileInfo luaFile in toDirInfo.GetFiles("*.lua", SearchOption.AllDirectories))
          {
              string allPath = luaFile.FullName;
              EncryptFile(allPath, allPath); //进行RC4
          }   
-         */
     }
 
     //luac for windows
@@ -187,7 +187,7 @@ public class MePackager
     }
 
     [MenuItem("ME Tools/4.同步到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存")]
-    static void copyToCache()
+    public static void copyToCache()
     {
         string targetPath = API.AssetRoot + "lua";
         string srcPath = Application.dataPath + "/Lua";
@@ -211,7 +211,7 @@ public class MePackager
     }
 
 
-    static void getSubFiles(string path, List<FileInfo> fileList, int type)
+    protected static void getSubFiles(string path, List<FileInfo> fileList, int type)
     {
         if (type == 1) //目录
         {
@@ -242,7 +242,7 @@ public class MePackager
 
 
     //资源目标平台
-    static BuildTarget GetTargetPlatform()
+    public static BuildTarget GetTargetPlatform()
     {
         BuildTarget target = BuildTarget.Android;
 #if UNITY_STANDALONE
@@ -250,7 +250,7 @@ public class MePackager
         target = BuildTarget.StandaloneWindows;
 #elif UNITY_IPHONE
 		Debug.Log ("build for ios");
-			target = BuildTarget.iPhone;
+			target = BuildTarget.iOS;
 #elif UNITY_ANDROID
 			Debug.Log ("build for android");
 			target = BuildTarget.Android;
@@ -258,7 +258,7 @@ public class MePackager
         return target;
     }
 
-    static void cleanMeta(string path)
+    public static void cleanMeta(string path)
     {
         string[] names = Directory.GetFiles(path);
         string[] dirs = Directory.GetDirectories(path);

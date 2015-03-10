@@ -1,4 +1,4 @@
-﻿﻿using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
@@ -61,26 +61,15 @@ public class LuaBehaviour : MonoBehaviour
         MissionList.Add(new MissionPack(func, args));
     }
  
-    public string AssetPath
+    public virtual string AssetPath
     {
         get
         {
-            string target = string.Empty;
-            if (Application.platform == RuntimePlatform.OSXEditor ||
-                Application.platform == RuntimePlatform.IPhonePlayer ||
-                Application.platform == RuntimePlatform.OSXEditor)
-            {
-                target = "iphone";
-            }
-            else
-            {
-                target = "android";
-            }
-            return Application.persistentDataPath + "/asset/" + target + "/";
+
+            return API.AssetRoot + "asset/" + API.GetTargetPlatform + "/";
         }
     }
-
-
+     
     public void LoadBundle(string fname, Callback<string, AssetBundle> handler)
     {
         if (API.BundleTable.ContainsKey(fname))
@@ -104,16 +93,17 @@ public class LuaBehaviour : MonoBehaviour
     }
 
 
-    IEnumerator onLoadBundle(string name, Callback<string, AssetBundle> handler)
+    protected virtual IEnumerator onLoadBundle(string name, Callback<string, AssetBundle> handler)
     {
         string uri = "";
         if (name.LastIndexOf(".") != -1)
         {
-            uri = "file:///" + AssetPath + name;
+            uri = "file://" + AssetPath + name;
         }
         else
         {
-            uri = "file:///" + AssetPath + name + ".assetbundle";
+            //既然打包的时候用的ab，那么默认就应该用ab为扩展名，标准协议应该是file://
+            uri = "file://" + AssetPath + name + ".ab";
         }
 
         WWW www = new WWW(uri);

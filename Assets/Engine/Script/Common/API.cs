@@ -22,7 +22,7 @@ public class API  {
     public static string Encrypt_Key = "this is source encryption key for me game frame,please custom this key string";
 
     //是否启用调试
-    public static bool Debug = true;    
+    public static bool UseDebug = true;    
 
     public static Lua env
     {
@@ -30,25 +30,49 @@ public class API  {
         {
             if (lua == null)
             {
-                lua = new Lua();              
+                lua = new Lua();               
                 //设置lua脚本文件查找路径
-                lua["package.path"] = lua["package.path"] + ";" + Application.persistentDataPath + "/lua/?.lua;";
+                lua["package.path"] = lua["package.path"] + ";" + AssetRoot + "lua/?.lua;";
             }
             return lua;
         }
     }
+    public delegate string AssetRootProvider ();
+    public static AssetRootProvider assetRootProvider;
+    /// <summary>
+    /// 提供文件保存路径
+    /// </summary>
+    /// <value>The data path.</value>
+    public static string AssetRoot{
 
-    public static string AssetRoot
+        get{
+            if (assetRootProvider!=null)return assetRootProvider ();
+            return Application.persistentDataPath+"/";
+
+        }
+    }
+    static private string _GetTargetPlatform;
+    //资源目标平台
+    static public string GetTargetPlatform
     {
-        get
-        {
-            return Application.persistentDataPath + "/";
+        get{
+            if (_GetTargetPlatform != null)
+                return _GetTargetPlatform;
+            string target = "webplayer";
+            #if UNITY_STANDALONE
+            target = "standalonewindows";
+            #elif UNITY_IPHONE
+            target = "ios";
+            #elif UNITY_ANDROID
+            target = "android";
+            #endif
+            return target;
         }
     }
     #region
     public static void Log(object msg)
     {
-        if (Debug)
+        if (UseDebug)
         {
             DebugTools.log += msg.ToString() + "\n\r";
             if (DebugTools.obj == null)
@@ -154,7 +178,7 @@ public class API  {
         }
     }
 
-	//异步HTTP
+    //异步HTTP
     public static WebClientEx SendRequest(string url, string data, LuaFunction progressHander, LuaFunction completeHandler)
     {
         WebClientEx webClient = new WebClientEx();
@@ -179,10 +203,10 @@ public class API  {
         {
             API.Log("Post err " + e.Message);
         }
-         //返回client ，可用 client.CancelAsync(); 中断下载
+        //返回client ，可用 client.CancelAsync(); 中断下载
         return webClient;
     }
- 
+
     //异步下载
     public static WebClient DownLoad(string src, string SavePath, LuaFunction progressHander, LuaFunction completeHander)
     {
@@ -209,7 +233,7 @@ public class API  {
         return client;
     }
 
-   //时钟
+    //时钟
     public static MeTimer AddTimer(float interval, Callback<MeTimer> onTimerHander)
     {
         return AddTimer(interval, 0, onTimerHander);

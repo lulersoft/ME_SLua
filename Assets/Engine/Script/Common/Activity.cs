@@ -22,13 +22,13 @@ public class Activity : LuaBehaviour
     IEnumerator loadStreamingAssets()
     {
         string sorucefilename = "data.zip";
-        string filename = Application.persistentDataPath + "/" + sorucefilename;
+        string filename = API.AssetRoot + sorucefilename;
         string log = "";       
 
         byte[] bytes = null;
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
 
-        string sourcepath = "file:///" + Application.streamingAssetsPath + "/" + sorucefilename;
+        string sourcepath = "file://" + Application.streamingAssetsPath + "/" + sorucefilename;
         log += "asset path is: " + sourcepath;
         WWW www = new WWW(sourcepath);
         yield return www;
@@ -87,7 +87,7 @@ public class Activity : LuaBehaviour
             }
 
             //解压缩
-            API.UnpackFiles(filename, Application.persistentDataPath + "/");
+            API.UnpackFiles(filename, API.AssetRoot);
 
             yield return new WaitForEndOfFrame();
 
@@ -105,7 +105,7 @@ public class Activity : LuaBehaviour
     }
     void InitAsstes()
     {       
-        string mainfile = Application.persistentDataPath + "/lua/"+_name;
+        string mainfile =API.AssetRoot+ "lua/"+_name;
         //如果入口主main.lua未找到       
         if (!File.Exists(mainfile) || isDebug)
         {
