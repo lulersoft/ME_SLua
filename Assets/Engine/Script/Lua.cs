@@ -65,12 +65,12 @@ public class Lua /*: IDisposable */{
     {
         if (fn.EndsWith(".lua"))
         {
-            script = Application.persistentDataPath + "/lua/" + fn;
+			script = API.AssetRoot + "lua/" + fn;
         }
         else
         {
             fn = fn.Replace(".", "/");
-            script = Application.persistentDataPath + "/lua/" + fn + ".lua";
+			script = API.AssetRoot + "lua/" + fn + ".lua";
         }
 
         FileStream fs = File.Open(script, FileMode.Open);
@@ -78,6 +78,7 @@ public class Lua /*: IDisposable */{
         byte[] bytes = new byte[length];
         fs.Read(bytes, 0, bytes.Length);
         fs.Close();
+        API.Encrypt(ref bytes);
         return bytes;
     } 
 
