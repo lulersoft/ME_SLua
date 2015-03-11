@@ -53,10 +53,10 @@ public class MePackager
         //复制资源
         foreach (FileInfo mFile in mDirInfo.GetFiles(assetbundle_extension, SearchOption.AllDirectories))
         {
-            string form = mFile.FullName;
-            string to = form.Replace("\\", "/");
+            string from = mFile.FullName;
+            string to = from.Replace("\\", "/");
             to = to.Replace(mPath, toPath);
-            EncryptFile(form, to);
+            EncryptFile(from, to);
         }
     }
     
@@ -186,7 +186,7 @@ public class MePackager
 #endif
     }
 
-    [MenuItem("ME Tools/4.同步到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存")]
+    [MenuItem("ME Tools/4.同步代码到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存")]
     public static void copyToCache()
     {
         string targetPath = API.AssetRoot + "lua";
