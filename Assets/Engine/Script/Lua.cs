@@ -5,17 +5,23 @@ using SLua;
 using System.Reflection;
 using System;
 using System.IO;
+using System.Collections.Generic;
 [CustomLuaClassAttribute]
 public class Lua /*: IDisposable */{     
     public LuaState luaState;
     static LuaSvrGameObject lgo;
     bool errorReported = false;
-
+   
     public Lua()
     {
 
-        luaState = new LuaState();
         LuaState.loaderDelegate += luaLoader;
+        luaState = new LuaState();
+
+        LuaDLL.lua_pushstdcallcfunction(luaState.L, import);
+        LuaDLL.lua_setglobal(luaState.L, "using");
+
+
         LuaObject.init(luaState.L);
         bind("BindUnity");
         bind("BindUnityUI");
@@ -108,5 +114,25 @@ public class Lua /*: IDisposable */{
     {
         return luaState.getFunction(fn);
     }
+
+    private static HashSet<string> ms_includedFiles = new HashSet<string>();
+
+
+
+    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+    internal static int import(IntPtr l)
+    {
+
+        LuaDLL.luaL_checktype(l, 1, LuaTypes.LUA_TSTRING);
+        string str = LuaDLL.lua_tostring(l, 1);
+        if (ms_includedFiles.Contains (str)) {
+            return 0;
+        } else {
+            ms_includedFiles.Add (str);
+        }
+        return LuaState.import (l);
+
+    }
+    
 
 }
