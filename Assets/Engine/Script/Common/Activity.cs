@@ -5,7 +5,7 @@ using SLua;
 
 /// <summary>
 /// Activity
-/// @author 小陆  QQ:2604904
+/// @author 小陆  QQ:2604904  
 /// </summary>
 [CustomLuaClassAttribute]
 public class Activity : LuaBehaviour
