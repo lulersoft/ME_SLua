@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class MePackager
 {
-    //生成的资源包的扩展名
+    //生成的资源包的扩展名  
     public static string assetbundle_extension = "*.ab";
 
 

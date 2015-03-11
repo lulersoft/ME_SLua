@@ -11,7 +11,7 @@ using LuaInterface;
 
 /// <summary>
 /// LuaBehaviour
-/// @author 小陆  QQ:2604904
+/// @author 小陆  QQ:2604904  
 /// </summary>
 [CustomLuaClassAttribute]
 public class LuaBehaviour : MonoBehaviour
