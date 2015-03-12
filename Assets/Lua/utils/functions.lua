@@ -15,7 +15,7 @@ function functions.copyTab(st)
         if type(v) ~= "table" then
             tab[k] = v
         else
-            tab[k] = copyTab(v)
+            tab[k] = functions.copyTab(v)
         end
     end
     return tab
