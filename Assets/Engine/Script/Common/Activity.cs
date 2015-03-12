@@ -5,7 +5,7 @@ using SLua;
 
 /// <summary>
 /// Activity
-/// @author 小陆  QQ:2604904
+/// @author 小陆  QQ:2604904  
 /// </summary>
 [CustomLuaClassAttribute]
 public class Activity : LuaBehaviour
@@ -106,8 +106,9 @@ public class Activity : LuaBehaviour
     void InitAsstes()
     {       
         string mainfile =API.AssetRoot+ "lua/"+_name;
+        string assetFolder = API.AssetRoot + "/asset/";
         //如果入口主main.lua未找到       
-        if (!File.Exists(mainfile) || isDebug)
+        if (!Directory.Exists(assetFolder) || !File.Exists(mainfile) || isDebug)
         {
             //解压主资源文件
             StartCoroutine(loadStreamingAssets());             
