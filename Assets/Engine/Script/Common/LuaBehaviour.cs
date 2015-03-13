@@ -148,7 +148,7 @@ public class LuaBehaviour : MonoBehaviour
     protected void OnDestroy()
     {
 
-        UnLoadAllBundle()
+        UnLoadAllBundle();
 
         CallMethod("OnDestroy");
 
