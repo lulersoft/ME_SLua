@@ -56,7 +56,7 @@ public class Activity : LuaBehaviour
 				bytes = new byte[fs.Length]; 
 				fs.Read(bytes,0,(int)fs.Length); 
 			}   
-		} catch (Exception e){ 
+		} catch (System.Exception e){ 
 			log +=  "\nTest Fail with Exception " + e.ToString(); 
 			log +=  "\n"; 
 		} 
