@@ -87,7 +87,8 @@ public class LuaBehaviour : MonoBehaviour
     {
         foreach (AssetBundle bundle in API.BundleTable.Values)
         {
-            bundle.Unload(true);
+            if(bundle!=null)
+                bundle.Unload(false);
         }
         API.BundleTable.Clear();
     }
@@ -146,6 +147,8 @@ public class LuaBehaviour : MonoBehaviour
     }
     protected void OnDestroy()
     {
+
+        UnLoadAllBundle()
 
         CallMethod("OnDestroy");
 
