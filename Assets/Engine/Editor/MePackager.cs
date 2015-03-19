@@ -229,7 +229,7 @@ public class MePackager
          */ 
     }
 
-    [MenuItem("ME Tools/4.同步代码到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存")]
+    [MenuItem("ME Tools/5.同步代码到缓存 : 直接复制Asset->Lua目录(内含所有lua脚本文件)到缓存")]
     public static void copyToCache()
     {
         string targetPath = API.AssetRoot + "lua";
