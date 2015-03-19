@@ -250,7 +250,7 @@ public class MePackager
             File.WriteAllBytes(targetFullFilePath, fileBytes);
         }
 
-        Debug.Log(targetPath + " 文件夹已复制到 " + targetPath);
+        Debug.Log(srcPath + " 文件夹已复制到 " + targetPath);
     }
 
 
