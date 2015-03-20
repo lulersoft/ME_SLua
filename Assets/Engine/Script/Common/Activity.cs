@@ -28,7 +28,7 @@ public class Activity : LuaBehaviour
         byte[] bytes = null;
 #if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
 
-        string sourcepath = "file://" + Application.streamingAssetsPath + "/" + sorucefilename;
+        string sourcepath = "file:///" + Application.streamingAssetsPath + "/" + sorucefilename;
         log += "asset path is: " + sourcepath;
         WWW www = new WWW(sourcepath);
         yield return www;
