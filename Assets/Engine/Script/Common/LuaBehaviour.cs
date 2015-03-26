@@ -99,12 +99,13 @@ public class LuaBehaviour : MonoBehaviour
         string uri = "";
         if (name.LastIndexOf(".") != -1)
         {
-            uri = "file://" + AssetPath + name;
+            //file:/// 是三条杠杠,请睁大眼睛
+            uri = "file:///" + AssetPath + name;
         }
         else
         {
             //既然打包的时候用的ab，那么默认就应该用ab为扩展名，标准协议应该是file://
-            uri = "file://" + AssetPath + name + ".ab";
+            uri = "file:///" + AssetPath + name + ".ab";
         }
 
         WWW www = new WWW(uri);
