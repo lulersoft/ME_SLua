@@ -17,7 +17,9 @@
 
 2)slua项目 地址 https://github.com/pangweiwei/slua
 
-请自行下载slua覆盖到本u3d工程项目目录
+3)BestHTTP 详细 https://www.baidu.com/s?wd=besthttp&rsv_spt=1&issp=1&f=8&rsv_bp=0&rsv_idx=2&ie=utf-8&tn=baiduhome_pg&rsv_enter=1&rsv_sug3=6&rsv_sug1=4
+
+请自行下载slua和BestHTTP覆盖到本u3d工程项目目录
 
 ##核心思路
 
