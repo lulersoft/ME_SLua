@@ -23,6 +23,7 @@ public class LuaBehaviour : MonoBehaviour
     protected bool isLuaReady = false;
 
     protected LuaTable table;
+    protected List<MissionPack> MissionList = new List<MissionPack>();
 
     protected Lua env
     {
@@ -34,6 +35,13 @@ public class LuaBehaviour : MonoBehaviour
 
     protected void Update()
     {
+        if (MissionList.Count > 0)
+        {
+            MissionPack pack = MissionList[0];
+            MissionList.RemoveAt(0); 
+            pack.Call();
+        }
+
         if (usingUpdate)
         {
             CallMethod("Update");
@@ -47,9 +55,101 @@ public class LuaBehaviour : MonoBehaviour
             CallMethod("FixedUpdate");
         }
     }
-           
+
+    public void AddMission(LuaFunction func, params object[] args)
+    {
+        MissionList.Add(new MissionPack(func, args));
+    }
+ 
+    public virtual string AssetPath
+    {
+        get
+        {
+
+            return API.AssetRoot + "asset/" + API.GetTargetPlatform + "/";
+        }
+    }
+     
+    public void LoadBundle(string fname, Callback<string, AssetBundle> handler)
+    {
+        if (API.BundleTable.ContainsKey(fname))
+        {
+            AssetBundle bundle = API.BundleTable[fname] as AssetBundle;
+            if (handler != null) handler(name, bundle);
+        }
+        else
+        {
+            StartCoroutine(onLoadBundle(fname, handler));
+        }
+    }
+
+    public void UnLoadAllBundle()
+    {
+        foreach (AssetBundle bundle in API.BundleTable.Values)
+        {
+            if(bundle!=null)
+                bundle.Unload(false);
+        }
+        API.BundleTable.Clear();
+    }
+
+
+    protected virtual IEnumerator onLoadBundle(string name, Callback<string, AssetBundle> handler)
+    {
+        string uri = "";
+        if (name.LastIndexOf(".") != -1)
+        {
+            //file:/// 是三条杠杠,请睁大眼睛
+            uri = "file:///" + AssetPath + name;
+        }
+        else
+        {
+            //既然打包的时候用的ab，那么默认就应该用ab为扩展名，标准协议应该是file://
+            uri = "file:///" + AssetPath + name + ".ab";
+        }
+
+        WWW www = new WWW(uri);
+        yield return www;
+        if (www.error != null)
+        {
+            Debug.Log("Warning erro: " + uri);
+            Debug.Log("Warning erro: " + "loadStreamingAssets");
+            Debug.Log("Warning erro: " + www.error);
+            StopCoroutine("onLoadBundle");
+            yield break;
+        }
+        while (!www.isDone)
+        {
+            yield return new WaitForEndOfFrame();
+        }
+        byte[] data = www.bytes;
+
+        //资源解密
+        API.Encrypt(ref data);
+
+        AssetBundle bundle = AssetBundle.CreateFromMemoryImmediate(data);
+
+        yield return new WaitForEndOfFrame();
+
+        try
+        {
+            API.BundleTable[name] = bundle;
+            if (handler != null) handler(name, bundle);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError(FormatException(e), gameObject);
+        }
+    }
+
+    public void DestroyMe()
+    {
+        Destroy(gameObject);
+    }
     protected void OnDestroy()
-    {       
+    {
+
+        UnLoadAllBundle();
 
         CallMethod("OnDestroy");
 
@@ -195,16 +295,62 @@ public class LuaBehaviour : MonoBehaviour
         string source = (string.IsNullOrEmpty(e.Source)) ? "<no source>" : e.Source.Substring(0, e.Source.Length - 2);
         return string.Format("{0}\nLua (at {2})", e.Message, string.Empty, source);
     }
-    //挂接回调调用函数：一般用于jni或者invoke等操作
-    public void MeMessage(object arg)
+
+    #region 消息中心
+    //添加消息侦听
+    public void AddListener(string eventType, Callback handler)
     {
-        Messenger.Broadcast<object>(this.name + "MeMessage", arg);
+        Messenger.AddListener(eventType, handler);
     }
 
-    //挂接回调调用函数：一般用于jin或者invoke等操作
-    public void MeMessageAll(object arg)
+    public void AddListener2(string eventType, Callback<object> handler)
     {
-        Messenger.Broadcast<object>("MeMessageAll", arg);
+        Messenger.AddListener<object>(eventType, handler);
     }
+
+    //移除一事件侦听
+    public void RemoveListener(string eventType, Callback handler)
+    {
+        Messenger.RemoveListener(eventType, handler);
+    }
+    public void RemoveListener2(string eventType, Callback<object> handler)
+    {
+        Messenger.RemoveListener<object>(eventType, handler);
+    }
+
+    //触发消息广播
+    public void Broadcast(string eventType)
+    {
+        Messenger.Broadcast(eventType);
+    }
+
+    public void Broadcast(string eventType, object args)
+    {
+        Messenger.Broadcast<object>(eventType, args);
+    }
+    #endregion
+
 }
 
+[CustomLuaClassAttribute]
+public struct MissionPack
+{
+    public LuaFunction func;
+    public object[] args;
+
+    public MissionPack(LuaFunction _func, params object[] _args)
+    {
+        func = _func;
+        args = _args;
+    }
+
+    public object Call()
+    {
+        if (args != null)
+        {
+            return func.call(args);
+        }
+        func.call();
+        return null;
+    }
+}
