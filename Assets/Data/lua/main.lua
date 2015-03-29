@@ -40,40 +40,29 @@ function main.testdemo()
 	local game = GameObject("Performance")
 	--local lb = game:AddComponent("LuaBehaviour")
 	local lb = API.AddComponent(game,"LuaBehaviour")
-	lb:DoFile("demo")
+	lb:DoFile("demo/demo")
 end
 
 --打地鼠游戏
 function main.RunMoleGame( )
 	local game = GameObject("moleGame")
 	local lb = API.AddComponent(game,"LuaBehaviour")
-	lb:DoFile("moleGame")
+	lb:DoFile("demo/moleGame")
 end
 
 --检查更新
 function  main.checkVersion()	
 	local data="version="..version.."&appid="..appid..string.format("&Cache=%d",os.time())
 	Debug.Log("checkVersion:"..weburl..data)
-	local webclient=API.SendRequest(weburl,data,main.OnProgessChanged,main.OnSendRequestCompleted)	
+	local webclient=API.SendRequest(weburl,data,main.OnSendRequestCompleted)	
 end
---异步HTTP进度
-function main.OnProgessChanged(sender,e)
-	Debug.Log("OnProgessChanged")
-end
---异步HTTP完成
-function main.OnSendRequestCompleted(sender,e)
-	Debug.Log("OnSendRequestCompleted")
- 	if e.Error~=null then
-		--Debug.Log("SendRequestCompleted err :"..e.Message)
-		--开始游戏逻辑
-		main.StartGame()
 
-	elseif e.Cancelled then
-		--Debug.Log("Cancelled")
-		--开始游戏逻辑
-		main.StartGame()
-	else		
-		local str=e.Result
+--异步HTTP完成
+function main.OnSendRequestCompleted(req,resp)
+	Debug.Log("OnSendRequestCompleted")
+	if resp.IsSuccess then
+ 
+		local str=resp.DataAsText
 		Debug.Log("json:"..str)
 		local obj, pos, err = json.decode (str, 1, nil)
 
@@ -82,55 +71,38 @@ function main.OnSendRequestCompleted(sender,e)
 		  --开始游戏逻辑
 		  main.StartGame()
 		else			
-		  if obj.status>0 then
-		  	if obj.downurl then
-		  		--开始升级
-		  		tmpfile=AssetRoot.."/tmp.zip"
-		  		local webclinet=API.DownLoad(obj.downurl,tmpfile,main.OnDownloadProgressChanged,main.OnDownloadCompleted)
-		  	else
-		  		--开始游戏逻辑
+			if obj.status>0 then
+			  	if obj.downurl then
+			  		--开始升级
+			  		tmpfile=AssetRoot.."/tmp.zip"
+			  		local _arg="test"
+			  		local webclinet=API.DownLoad(obj.downurl,tmpfile,_arg,main.OnDownloadProgressChanged,main.OnDownloadCompleted)
+			  	else
+			  		--开始游戏逻辑
+					main.StartGame()
+			  	end
+			else
+			  	--开始游戏逻辑
 				main.StartGame()
-		  	end
-		  else
-		  	--开始游戏逻辑
-			main.StartGame()
-		  end
+			end
 		end
 	end
 end
 
 function main.StartGame()
-	--切换为主线程执行
-	this:AddMission(main.RunMoleGame,nil)
+	main.RunMoleGame()
 end
-
-
 
 --下载进度回调
-function main.OnDownloadProgressChanged(sender,e)
-	--切换为主线程执行
-	this:AddMission(main.OnDownLoadProgress,e)
-end
-function main.OnDownLoadProgress(e)
-	local str=string.format("downloaded %s of %s bytes. %s complete...",    
-        e.BytesReceived, 
-        e.TotalBytesToReceive,
-        e.ProgressPercentage) 
+function main.OnDownloadProgressChanged(p)
+	local str="downloading  "..tostring(p*100).."% completed"
 	Debug.Log(str)
 end
 --下载完成
-function main.OnDownloadCompleted(sender,e)
-	--切换为主线程执行
-	this:AddMission(main.OnDownData,e)
-end
-function main.OnDownData(e)
-	if e.Error then
-		Debug.Log("lua download err  :"..e.Message)
-		main.StartGame()
-	elseif e.Cancelled then
-		Debug.Log("lua:download Cancelled")
-		main.StartGame()
-	else
+function main.OnDownloadCompleted(req,resp,p)
+	Debug.Log(p) --参数传递测试
+	
+	if resp.IsSuccess then
 		Debug.Log("download completed.. now unzip")
 		--tmpfile=this.AssetRoot.."/tmp.zip"
 		--解压缩
@@ -143,6 +115,9 @@ function main.OnDownData(e)
         --重新加载main.lua --或开始执行旧游戏
         --this:ReStart() --立即重新加载游戏（请确保你的版本升级服务器代码生效，如果status一直为1，,将会不断的循环升级）
         main.StartGame() --执行旧的游戏，等下次启动游戏自动应用新版本
+    else 
+    	Debug.Log("DownLoad file err")
+    	main.StartGame()
 	end
 end
 

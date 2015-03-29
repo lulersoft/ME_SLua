@@ -25,6 +25,7 @@ public class Lua /*: IDisposable */{
         LuaObject.init(luaState.L);
         bind("BindUnity");
         bind("BindUnityUI");
+        bind("BindDll");
         bind("BindCustom");
         bind("BindExtend"); // if you want to extend slua, can implemented BindExtend function like BindCustom etc.
 
@@ -35,7 +36,8 @@ public class Lua /*: IDisposable */{
         lgo.onUpdate = this.tick;
 
         LuaTimer.reg(luaState.L);
-        LuaCoroutine.reg(luaState.L, lgo);    
+        LuaCoroutine.reg(luaState.L, lgo);
+        Helper.reg(luaState.L);
     }
 
 
@@ -84,7 +86,10 @@ public class Lua /*: IDisposable */{
         byte[] bytes = new byte[length];
         fs.Read(bytes, 0, bytes.Length);
         fs.Close();
-        API.Encrypt(ref bytes);
+        if (API.usingEncryptLua)
+        {
+            API.EncryptAll(ref bytes); //RC4 解密lua文件
+        }
         return bytes;
     } 
 
