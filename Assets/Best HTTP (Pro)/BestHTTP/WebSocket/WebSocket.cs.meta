@@ -1,0 +1,26 @@
+fileFormatVersion: 2
+guid: c7f76aec9cca4a648b5a3f75410f1ffb
+labels:
+- http
+- www
+- web
+- cache
+- stream
+- WP8
+- rest
+- websocket
+- socket
+- socket.io
+- cookie
+- proxy
+- ios
+- android
+- wp8
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

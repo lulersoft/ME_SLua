@@ -121,13 +121,18 @@ public class Activity : LuaBehaviour
     //重置框架,相当于重新启动游戏
     public void ReStart()
     {
+        StartCoroutine(onReStart()); 
+    }
+    IEnumerator onReStart()
+    {
+        yield return new WaitForEndOfFrame();
         if (table != null)
         {
             table.Dispose();
         }
-
-        UnLoadAllBundle();
-
+        yield return new WaitForEndOfFrame();
+        API.CleanLuaEnv();
+        yield return new WaitForEndOfFrame();
         InitAsstes();
     }
 }
