@@ -24,6 +24,9 @@ public class LuaBehaviour : MonoBehaviour
 
     protected LuaTable table;
 
+    //保存的lua 数据存取
+    public LuaTable data{get;set;} 
+
     protected Lua env
     {
         get 
