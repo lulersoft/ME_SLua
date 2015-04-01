@@ -58,7 +58,7 @@ public class MeLoadBundle : MonoBehaviour {
         if (BundleTable.ContainsKey(fname))
         {
             AssetBundle bundle = BundleTable[fname] as AssetBundle;
-            if (handler != null) handler(name, bundle,arg);
+            if (handler != null) handler(fname, bundle,arg);
         }
         else
         {
