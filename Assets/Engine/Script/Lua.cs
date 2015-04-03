@@ -1,16 +1,18 @@
 ﻿using UnityEngine;
-using System.Collections;
 using LuaInterface;
 using SLua;
-using System.Reflection;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
+
+
 [CustomLuaClassAttribute]
 public class Lua /*: IDisposable */{     
     public LuaState luaState;
-    static LuaSvrGameObject lgo;
-    bool errorReported = false;
+    static LuaSvrGameObject lgo;  
+    int errorReported = 0;
    
     public Lua()
     {
@@ -18,16 +20,11 @@ public class Lua /*: IDisposable */{
         LuaState.loaderDelegate += luaLoader;
         luaState = new LuaState();
 
-        LuaDLL.lua_pushstdcallcfunction(luaState.L, import);
-        LuaDLL.lua_setglobal(luaState.L, "using");
-
+      //  LuaDLL.lua_pushstdcallcfunction(luaState.L, import);
+        //LuaDLL.lua_setglobal(luaState.L, "using");
 
         LuaObject.init(luaState.L);
-        bind("BindUnity");
-        bind("BindUnityUI");
-        bind("BindDll");
-        bind("BindCustom");
-        bind("BindExtend"); // if you want to extend slua, can implemented BindExtend function like BindCustom etc.
+        bindAll(luaState.L);
 
         GameObject go = new GameObject("LuaSvrProxy");
         lgo = go.AddComponent<LuaSvrGameObject>();
@@ -37,27 +34,43 @@ public class Lua /*: IDisposable */{
 
         LuaTimer.reg(luaState.L);
         LuaCoroutine.reg(luaState.L, lgo);
-        Helper.reg(luaState.L);
+        Helper.reg(luaState.L);       
+        /*
+        if (LuaDLL.lua_gettop(luaState.L) != errorReported)
+        {
+            Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
+            errorReported = LuaDLL.lua_gettop(luaState.L);
+        }       
+         * */
     }
-
-
-    void bind(string name)
-    {
-        MethodInfo mi = typeof(LuaObject).GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-        if (mi != null) mi.Invoke(null, new object[] { luaState.L });
-        else if (name == "BindUnity") Debug.LogError(string.Format("Miss {0}, click SLua=>Make to regenerate them", name));
-    }
+      
 
     void tick()
     {
-        if (LuaDLL.lua_gettop(luaState.L) != 0 && !errorReported)
+        if (LuaDLL.lua_gettop(luaState.L) != errorReported)
         {
             Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
-            errorReported = true;
+            errorReported = LuaDLL.lua_gettop(luaState.L);
         }
 
         luaState.checkRef();
         LuaTimer.tick(Time.deltaTime);
+    }
+
+    void bindAll(IntPtr l)
+    {
+        Assembly[] ams = AppDomain.CurrentDomain.GetAssemblies();
+        foreach (Assembly a in ams)
+        {
+            Type[] ts = a.GetExportedTypes();
+            foreach (Type t in ts)
+            {
+                if (t.GetCustomAttributes(typeof(LuaBinderAttribute), false).Length > 0)
+                {
+                    t.GetMethod("Bind").Invoke(null, new object[] { l });
+                }
+            }
+        }
     }
 
     public IntPtr handle

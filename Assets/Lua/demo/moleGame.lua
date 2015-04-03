@@ -107,7 +107,7 @@ function game.onLoadComplete(uri,bundle)
 
 	if uri=="gui.ab" then
 
-		local prefab = bundle:LoadAsset("Assets/Builds/GUI/Prefab/GUI.prefab")
+		local prefab = bundle:LoadAsset("Assets/Builds/Demo/Prefab/GUI.prefab")
 		local guiGo=GameObject.Instantiate(prefab)
 		guiGo.name="GUI"
 
@@ -161,7 +161,7 @@ function game.onLoadComplete(uri,bundle)
 		API.LoadBundle(name,game.onLoadComplete)  
 
  	elseif uri=="molepre.ab" then
- 		local name="Assets/Builds/GUI/Prefab/molePre.prefab"
+ 		local name="Assets/Builds/Demo/Prefab/molePre.prefab"
  		local prefab = bundle:LoadAsset(name)--bundle.mainAsset--bundle:Load(name) 
 
  		local idx=0

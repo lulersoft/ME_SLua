@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 672554339
+CRC: 2351230780
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 15427d7cfac2ae3c9afe5fb313d878e5
+    Hash: 43cd8d4828ac91f2da68e1c664c1fc76
   TypeTreeHash:
     serializedVersion: 2
     Hash: d6d23d2f827ebc03385b336b814c0b0e
@@ -52,6 +52,6 @@ ClassTypes:
 - Class: 224
   Script: {instanceID: 0}
 Assets:
-- Assets/Builds/GUI/Prefab/GUI.prefab
+- Assets/Builds/Demo/Prefab/GUI.prefab
 Dependencies:
 - F:/project/ME_SLua_Local/Assets/Builds/AssetBundles/moleatlas.ab

@@ -6,6 +6,9 @@ local this
 local gameObject
 local transform
 local r=10
+
+math.deg2rad=math.pi/180
+
 function demo.Start()
 
 	this=demo.this
@@ -14,12 +17,14 @@ function demo.Start()
 
 	--添加个照相机
 	local carm=GameObject("carm")
-	API.AddComponent(carm,"Camera")
+	API.AddComponent(carm,Camera)
 	
 	carm.transform.localPosition=Vector3(9,3,-17)
 
 	--来一束光照亮测试场景
-	local light = API.AddComponent(carm,"Light")
+	--Debug.Log(Light)
+	--local light = API.AddComponent(carm,Light)
+	local light=carm:AddComponent(Light)
 	light.type=LightType.Directional
 
 	demo.test1()
@@ -29,7 +34,7 @@ function demo.test1()
 	local i=0
 	while (i < 1000) do
 		i = i + 1
-		this:RunCoroutine(WaitForSeconds(i * 0.1), demo.cor, i)
+		API.RunCoroutine(WaitForSeconds(i * 0.1), demo.cor, i)
 	end
 end
 function demo.cor(i)
@@ -37,10 +42,9 @@ function demo.cor(i)
 end
 function demo.createCube(ii)
 	local cube=GameObject.CreatePrimitive(PrimitiveType.Cube)
-	cube.name=tostring(ii)
-	cube.transform.position = Vector3(10 + r * math.cos((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad), 10 + r * math.sin((ii + 10) * Mathf.Deg2Rad))	
-
-	local lb = API.AddComponent(cube,"LuaBehaviour")
+	cube.name=tostring(ii)	
+	cube.transform.position = Vector3(10 + r * math.cos((ii + 10) * math.deg2rad), 10 + r * math.sin((ii + 10) * math.deg2rad), 10 + r * math.sin((ii + 10) * math.deg2rad))	
+	local lb = API.AddComponent(cube,LuaBehaviour)
 	lb:DoFile("demo/testui2")
 end
 

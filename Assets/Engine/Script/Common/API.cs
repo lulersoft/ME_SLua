@@ -150,6 +150,12 @@ public class API
         Type t = Type.GetType(classname);
         return obj.AddComponent(t);
     }
+
+    public static object AddComponent(GameObject obj, Type classname)
+    {
+        return obj.AddComponent(classname);
+    }
+
     public static object AddMissComponent(GameObject obj, string classname)
     {
         Type t = Type.GetType(classname);
@@ -160,7 +166,39 @@ public class API
         }
         return _out;
     }
+    public static void StartCoroutine(IEnumerator ie)
+    {
+        if (MeLoadBundle.obj == null)
+        {
+            MeLoadBundle.obj = new GameObject("~MeLoadBundle");
+            MeLoadBundle.obj.AddComponent<MeLoadBundle>();
+            GameObject meGo = GameObject.Find("~ME~");
+            if (meGo == null)
+            {
+                meGo = new GameObject("~ME~");
+            }
+            MeLoadBundle.obj.transform.SetParent(meGo.transform);
+        }
+        MeLoadBundle.self.StartCoroutine(ie);
+    }
 
+    public static void RunCoroutine(YieldInstruction ins, LuaFunction func, object args)
+    {
+        API.StartCoroutine(doCoroutine(ins, func, args)); 
+    }
+
+    private static IEnumerator doCoroutine(YieldInstruction ins, LuaFunction func, object args)
+    {
+        yield return ins;
+        if (args != null)
+        {
+            func.call(args);
+        }
+        else
+        {
+            func.call(); 
+        }
+    }
     //zip压缩
     public static void PackFiles(string filename, string directory)
     {

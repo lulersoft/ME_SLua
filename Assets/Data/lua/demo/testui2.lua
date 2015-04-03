@@ -5,6 +5,7 @@ local testui2={}
 local this
 local gameObject
 local transform
+local material
 
 local colors={Color.red, Color.yellow, Color.blue, Color.white, Color.black, Color.cyan}
 
@@ -14,18 +15,19 @@ function testui2.Start()
 	gameObject=testui2.gameObject
 	transform=testui2.transform
 
-	this.usingUpdate=false
-	
-	this.renderer.material.color = colors[math.floor(6 * math.random())]
+	this.usingUpdate=true	
 
-	--this:Invoke("DestoryMe",35)
+	material=gameObject:GetComponent(Renderer).material
+	material.color=colors[math.floor(6 * math.random())+1]
+	--this.renderer.material.color = colors[idx] -淘汰的方法
+	
 	--35秒后销毁
-	this:RunCoroutine(WaitForSeconds(35),testui2.DestoryMe,nil)
+	API.RunCoroutine(WaitForSeconds(35),testui2.DestoryMe,nil)
 end
 
 function testui2.Update()
 	transform:Rotate(0, 5, 0)
-	this.renderer.material.color = colors[math.floor(6 * math.random())]
+	material.color=colors[math.floor(6 * math.random())+1]
 end
 
 function  testui2.DestoryMe()

@@ -89,11 +89,10 @@ public class LuaBehaviour : MonoBehaviour
     {
         try
         {
-            object chunk = env.DoFile(fn);
-                      
+            object chunk = env.DoFile(fn);           
             if (chunk != null  && (chunk is LuaTable))
             {
-                setBehaviour((LuaTable)chunk);               
+                setBehaviour((LuaTable)chunk); 
             }
           
         }

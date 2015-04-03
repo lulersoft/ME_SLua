@@ -30,15 +30,22 @@ function main.Start()
  	--main.testdemo()
 
  	--直接启动打地鼠游戏
- 	main.RunMoleGame()
+ 	main.RunMoleGame() 	
 
- 	--Debug.Log(LuaBehaviour)
+--[[
+	local cube=GameObject.CreatePrimitive(PrimitiveType.Cube)
+ 	local material=cube:GetComponent(Renderer).material
+ 	Debug.Log(material)
+ 	Debug.Log(Color.red)
+	material.color=Color.red
+--]]
+
 end
 
 --性能测试
 function main.testdemo()
 	local game = GameObject("Performance")
-	--local lb = game:AddComponent("LuaBehaviour")
+	--local lb = game:AddComponent(LuaBehaviour)
 	local lb = API.AddComponent(game,"LuaBehaviour")
 	lb:DoFile("demo/demo")
 end

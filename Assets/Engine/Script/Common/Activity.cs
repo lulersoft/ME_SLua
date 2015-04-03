@@ -17,12 +17,19 @@ public class Activity : LuaBehaviour
     void Awake()
     {       
         InitAsstes(); 
+        /*
+    var cube=GameObject.CreatePrimitive(PrimitiveType.Cube);
+ 	var material=(cube.GetComponent("Renderer") as Renderer).material;
+ 	Debug.Log(material.color);
+ 	Debug.Log(Color.red);
+    material.color = Color.red;
+        */
     }
 
     IEnumerator loadStreamingAssets()
     {
         string sorucefilename = "data.zip";
-        string filename = API.AssetRoot + sorucefilename;
+        string filename = API.AssetRoot + sorucefilename; 
         string log = "";       
 
         byte[] bytes = null;
