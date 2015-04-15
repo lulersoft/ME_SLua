@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
+
+[CustomLuaClassAttribute]
 public class EventListener : MonoBehaviour, IEventSystemHandler, IPointerClickHandler, ISubmitHandler// UnityEngine.EventSystems.EventTrigger
 {
 	public delegate void VoidDelegate (GameObject go);
