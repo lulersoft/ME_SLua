@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
-
-[CustomLuaClassAttribute]
-public class EventListener : UnityEngine.EventSystems.EventTrigger
+public class EventListener : MonoBehaviour, IEventSystemHandler, IPointerClickHandler, ISubmitHandler// UnityEngine.EventSystems.EventTrigger
 {
 	public delegate void VoidDelegate (GameObject go);
+    public delegate void BaseEventDelegate(BaseEventData eventData);
+
 	public VoidDelegate onClick;
 	public VoidDelegate onDown;
 	public VoidDelegate onEnter;
@@ -13,33 +14,37 @@ public class EventListener : UnityEngine.EventSystems.EventTrigger
 	public VoidDelegate onUp;
 	public VoidDelegate onSelect;
 	public VoidDelegate onUpdateSelect;
-
+    public BaseEventDelegate onSubmit;
+    
     static public EventListener Get(GameObject go)
-	{
+	{  
         EventListener listener = go.GetComponent<EventListener>();
         if (listener == null) listener = go.AddComponent<EventListener>();
 		return listener;
 	}
-	public override void OnPointerClick(PointerEventData eventData)
-	{
-		if(onClick != null) 	onClick(gameObject);
+	public  void OnPointerClick(PointerEventData eventData)
+    {       
+        onClick(gameObject);        
 	}
-	public override void OnPointerDown (PointerEventData eventData){
-		if(onDown != null) onDown(gameObject);
+	public  void OnPointerDown (PointerEventData eventData){
+		if(onDown != null) onDown(gameObject);    
 	}
-	public override void OnPointerEnter (PointerEventData eventData){
+	public  void OnPointerEnter (PointerEventData eventData){
 		if(onEnter != null) onEnter(gameObject);
 	}
-	public override void OnPointerExit (PointerEventData eventData){
+	public  void OnPointerExit (PointerEventData eventData){
 		if(onExit != null) onExit(gameObject);
+        
 	}
-	public override void OnPointerUp (PointerEventData eventData){
-		if(onUp != null) onUp(gameObject);
+	public  void OnPointerUp (PointerEventData eventData){
+		if(onUp != null) onUp(gameObject);  
 	}
-	public override void OnSelect (BaseEventData eventData){
+	public  void OnSelect (BaseEventData eventData){
 		if(onSelect != null) onSelect(gameObject);
 	}
-	public override void OnUpdateSelected (BaseEventData eventData){
-		if(onUpdateSelect != null) onUpdateSelect(gameObject);
-	}
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        if (onSubmit != null) onSubmit(eventData);
+    }
 }
