@@ -8,6 +8,15 @@ public class MeLoadBundle : MonoBehaviour {
     public static GameObject obj = null;
     public static MeLoadBundle self = null;
 
+    private static List<QuequePack> LoadQueueList = new List<QuequePack>();
+    private bool isReady = true;
+
+    struct QuequePack{
+        public string fname;
+        public Callback<string, AssetBundle> handler;
+        public object arg;
+    }
+
     private AssetBundleManifest _manifest=null;
 
     protected AssetBundleManifest manifest
@@ -33,6 +42,16 @@ public class MeLoadBundle : MonoBehaviour {
         DontDestroyOnLoad(gameObject);  //防止销毁自己
 	}
     
+    void Update()
+    {
+        if (LoadQueueList.Count>0 && isReady)
+        {
+            QuequePack pack = LoadQueueList[0];
+            LoadQueueList.RemoveAt(0);
+            StartLoadBundle(pack.fname,pack.handler,pack.arg);
+        }
+    }
+
     AssetBundle LoadBundle(string fname)
     {    
         AssetBundle bundle = null;
@@ -53,10 +72,21 @@ public class MeLoadBundle : MonoBehaviour {
         return bundle;
     }
 
-    public void LoadBundle(string fname, Callback<string, AssetBundle,object> handler,object arg)
+    public void LoadBundle(string fname, Callback<string, AssetBundle> handler,object arg)
     {
+        QuequePack pack = new QuequePack();
+        pack.fname = fname;
+        pack.handler = handler;
+        pack.arg=arg;
+        LoadQueueList.Add(pack);
+    }
+
+    public void StartLoadBundle(string fname, Callback<string, AssetBundle,object> handler,object arg)
+    {
+        isReady=false;
         if (BundleTable.ContainsKey(fname))
         {
+            isReady = true;
             AssetBundle bundle = BundleTable[fname] as AssetBundle;
             if (handler != null) handler(fname, bundle,arg);
         }
@@ -153,6 +183,7 @@ public class MeLoadBundle : MonoBehaviour {
 
         try
         {
+            isReady = true;
             BundleTable[name] = bundle;
             if (handler != null) handler(name, bundle,arg);
         }
