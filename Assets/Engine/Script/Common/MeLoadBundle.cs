@@ -1,5 +1,6 @@
 ﻿﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class MeLoadBundle : MonoBehaviour {
 
@@ -13,7 +14,7 @@ public class MeLoadBundle : MonoBehaviour {
 
     struct QuequePack{
         public string fname;
-        public Callback<string, AssetBundle> handler;
+        public Callback<string, AssetBundle,object> handler;
         public object arg;
     }
 
