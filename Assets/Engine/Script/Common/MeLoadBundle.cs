@@ -1,4 +1,4 @@
-﻿﻿using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -165,6 +165,7 @@ public class MeLoadBundle : MonoBehaviour {
         yield return www;
         if (www.error != null)
         {
+            isReady = true;
             API.Log("Warning erro: " + www.error);
             StopCoroutine("onLoadBundle");
             yield break;
@@ -190,6 +191,7 @@ public class MeLoadBundle : MonoBehaviour {
         }
         catch (System.Exception e)
         {
+            isReady = true;
             Debug.LogError(FormatException(e), gameObject);
         }
     }
