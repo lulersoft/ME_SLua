@@ -418,69 +418,57 @@ public class API
         }
     }
     //RC4 字符串
-    public static string RC4(string input, string key)
+    public static string RC4(string str, String pass)
     {
-        StringBuilder result = new StringBuilder();
-        int x, y, j = 0;
-        int[] box = new int[256];
-
-        for (int i = 0; i < 256; i++)
-        {
-            box[i] = i;
-        }
-
-        for (int i = 0; i < 256; i++)
-        {
-            j = (key[i % key.Length] + box[i] + j) % 256;
-            x = box[i];
-            box[i] = box[j];
-            box[j] = x;
-        }
-
-        for (int i = 0; i < input.Length; i++)
-        {
-            y = i % 256;
-            j = (box[y] + j) % 256;
-            x = box[y];
-            box[y] = box[j];
-            box[j] = x;
-
-            result.Append((char)(input[i] ^ box[(box[y] + box[j]) % 256]));
-        }
-        return result.ToString();
+        Byte[] data =System.Text.Encoding.UTF8.GetBytes(str);
+        Byte[] bt=RC4(data, pass);
+        return System.Text.Encoding.UTF8.GetString(bt);        
     }
 
-    //RC4 byte 数组
-    public static byte[] RC4(byte[] input, string key)
+    public static Byte[] RC4(Byte[] data, String pass)
     {
-        byte[] result = new byte[input.Length];
-        int x, y, j = 0;
-        int[] box = new int[256];
+        if (data == null || pass == null) return null;
+        Byte[] output = new Byte[data.Length];
+        Int64 i = 0;
+        Int64 j = 0;
+        Byte[] mBox = GetKey(System.Text.Encoding.UTF8.GetBytes(pass), 256);
 
-        for (int i = 0; i < 256; i++)
+        // 加密
+        for (Int64 offset = 0; offset < data.Length; offset++)
         {
-            box[i] = i;
+            i = (i + 1) % mBox.Length;
+            j = (j + mBox[i]) % mBox.Length;
+            Byte temp = mBox[i];
+            mBox[i] = mBox[j];
+            mBox[j] = temp;
+            Byte a = data[offset];
+            //Byte b = mBox[(mBox[i] + mBox[j] % mBox.Length) % mBox.Length];
+            // mBox[j] 一定比 mBox.Length 小，不需要在取模
+            Byte b = mBox[(mBox[i] + mBox[j]) % mBox.Length];
+            output[offset] = (Byte)((Int32)a ^ (Int32)b);
         }
 
-        for (int i = 0; i < 256; i++)
-        {
-            j = (key[i % key.Length] + box[i] + j) % 256;
-            x = box[i];
-            box[i] = box[j];
-            box[j] = x;
-        }
+        data = output;
 
-        for (int i = 0; i < input.Length; i++)
-        {
-            y = i % 256;
-            j = (box[y] + j) % 256;
-            x = box[y];
-            box[y] = box[j];
-            box[j] = x;
+        return output;
+    }
+    static private Byte[] GetKey(Byte[] pass, Int32 kLen)
+    {
+        Byte[] mBox = new Byte[kLen];
 
-            result[i] = (byte)(input[i] ^ box[(box[y] + box[j]) % 256]);
+        for (Int64 i = 0; i < kLen; i++)
+        {
+            mBox[i] = (Byte)i;
         }
-        return result;
+        Int64 j = 0;
+        for (Int64 i = 0; i < kLen; i++)
+        {
+            j = (j + mBox[i] + pass[i % pass.Length]) % kLen;
+            Byte temp = mBox[i];
+            mBox[i] = mBox[j];
+            mBox[j] = temp;
+        }
+        return mBox;
     }
 
     //局部加密解密
