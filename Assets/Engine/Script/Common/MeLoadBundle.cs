@@ -73,7 +73,7 @@ public class MeLoadBundle : MonoBehaviour {
         return bundle;
     }
 
-    public void LoadBundle(string fname, Callback<string, AssetBundle> handler,object arg)
+    public void LoadBundle(string fname, Callback<string, AssetBundle,object> handler,object arg)
     {
         QuequePack pack = new QuequePack();
         pack.fname = fname;
