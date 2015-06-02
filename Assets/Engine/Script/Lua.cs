@@ -34,7 +34,9 @@ public class Lua /*: IDisposable */{
 
         LuaTimer.reg(luaState.L);
         LuaCoroutine.reg(luaState.L, lgo);
-        Helper.reg(luaState.L);       
+        Helper.reg(luaState.L);
+        LuaValueType.reg(luaState.L);
+        LuaDLL.luaS_openextlibs(luaState.L);
         /*
         if (LuaDLL.lua_gettop(luaState.L) != errorReported)
         {

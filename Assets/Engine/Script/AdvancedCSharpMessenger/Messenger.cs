@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using SLua;
  [CustomLuaClassAttribute]
 static internal class Messenger {
 	#region Internal variables

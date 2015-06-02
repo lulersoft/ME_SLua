@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.EventSystems;
+using SLua;
 
 [CustomLuaClassAttribute]
 public class EventListener : MonoBehaviour, IEventSystemHandler, IPointerClickHandler, ISubmitHandler// UnityEngine.EventSystems.EventTrigger

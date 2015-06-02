@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Net;
-
+using SLua;
 [CustomLuaClass]
 public class WebClientEx : WebClient
 {

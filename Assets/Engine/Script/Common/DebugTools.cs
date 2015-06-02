@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using SLua;
 [CustomLuaClass]
 public class DebugTools : MonoBehaviour {
 
