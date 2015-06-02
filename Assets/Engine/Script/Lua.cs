@@ -17,10 +17,7 @@ public class Lua /*: IDisposable */{
         luaState = new LuaState();
         LuaState.loaderDelegate += luaLoader;
         LuaObject.init(luaState.L);
-        bind("BindUnity");
-        bind("BindUnityUI");
-        bind("BindCustom");
-        bind("BindExtend"); // if you want to extend slua, can implemented BindExtend function like BindCustom etc.
+        bindAll(luaState.L);
 
         GameObject go = new GameObject("LuaSvrProxy");
         lgo = go.AddComponent<LuaSvrGameObject>();
@@ -29,27 +26,60 @@ public class Lua /*: IDisposable */{
         lgo.onUpdate = this.tick;
 
         LuaTimer.reg(luaState.L);
-        LuaCoroutine.reg(luaState.L, lgo);    
-    }
+        LuaCoroutine.reg(luaState.L, lgo);
+        Helper.reg(luaState.L);       
+        LuaValueType.reg(luaState.L);
+        LuaDLL.luaS_openextlibs(luaState.L);         
 
+		if (LuaDLL.lua_gettop(luaState.L) != errorReported)
+		{
+			Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
+			errorReported = LuaDLL.lua_gettop(luaState.L);
+		}
+	}		
 
-    void bind(string name)
+	void tick()
+	{
+		if (LuaDLL.lua_gettop(luaState.L) != errorReported)
+		{
+			errorReported = LuaDLL.lua_gettop(luaState.L);
+			Debug.LogError(string.Format("Some function not remove temp value({0}) from lua stack. You should fix it.",LuaDLL.luaL_typename(luaState.L,errorReported)));
+		}
+
+		luaState.checkRef();
+		LuaTimer.tick(Time.deltaTime);
+	}
+
+    void bindAll(IntPtr l)
     {
-        MethodInfo mi = typeof(LuaObject).GetMethod(name, BindingFlags.Public | BindingFlags.Static);
-        if (mi != null) mi.Invoke(null, new object[] { luaState.L });
-        else if (name == "BindUnity") Debug.LogError(string.Format("Miss {0}, click SLua=>Make to regenerate them", name));
-    }
+        Assembly[] ams = AppDomain.CurrentDomain.GetAssemblies();
 
-    void tick()
-    {
-        if (LuaDLL.lua_gettop(luaState.L) != 0 && !errorReported)
+        List<Type> bindlist = new List<Type>();
+        foreach (Assembly a in ams)
         {
-            Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
-            errorReported = true;
+            Type[] ts = a.GetExportedTypes();
+            foreach (Type t in ts)
+            {
+                if (t.GetCustomAttributes(typeof(LuaBinderAttribute), false).Length > 0)
+                {
+                    bindlist.Add(t);
+                }
+            }
         }
 
-        luaState.checkRef();
-        LuaTimer.tick(Time.deltaTime);
+        bindlist.Sort(new System.Comparison<Type>((Type a, Type b) =>
+        {
+            LuaBinderAttribute la = (LuaBinderAttribute)a.GetCustomAttributes(typeof(LuaBinderAttribute), false)[0];
+            LuaBinderAttribute lb = (LuaBinderAttribute)b.GetCustomAttributes(typeof(LuaBinderAttribute), false)[0];
+
+            return la.order.CompareTo(lb.order);
+        })
+        );
+
+        foreach (Type t in bindlist)
+        {
+            t.GetMethod("Bind").Invoke(null, new object[] { l });
+        }
     }
 
     public IntPtr handle
