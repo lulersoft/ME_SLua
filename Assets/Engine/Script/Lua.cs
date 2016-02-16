@@ -11,94 +11,24 @@ using System.Collections.Generic;
 [CustomLuaClassAttribute]
 public class Lua /*: IDisposable */{     
     public LuaState luaState;
-    static LuaSvrGameObject lgo;  
-    int errorReported = 0;
-   
+
+    public bool isReady = false;
+    LuaSvr l;
+
     public Lua()
-    {
-
+    {      
         LuaState.loaderDelegate += luaLoader;
-        luaState = new LuaState();
 
-      //  LuaDLL.lua_pushstdcallcfunction(luaState.L, import);
-        //LuaDLL.lua_setglobal(luaState.L, "using");
-
-        LuaObject.init(luaState.L);
-        bindAll(luaState.L);
-
-        GameObject go = new GameObject("LuaSvrProxy");
-        lgo = go.AddComponent<LuaSvrGameObject>();
-        GameObject.DontDestroyOnLoad(go);
-        lgo.state = luaState;
-        lgo.onUpdate = this.tick;
-
-        LuaTimer.reg(luaState.L);
-        LuaCoroutine.reg(luaState.L, lgo);
-        Helper.reg(luaState.L);
-        LuaValueType.reg(luaState.L);
-        LuaDLL.luaS_openextlibs(luaState.L);
-        /*
-        if (LuaDLL.lua_gettop(luaState.L) != errorReported)
+        l = new LuaSvr();
+        luaState = l.luaState;
+        l.init(null, () =>
         {
-            Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
-            errorReported = LuaDLL.lua_gettop(luaState.L);
-        }       
-         * */
+            isReady = true;
+            luaState = l.luaState;
+        });
+
     }
-      
-
-    void tick()
-    {
-        if (LuaDLL.lua_gettop(luaState.L) != errorReported)
-        {
-            Debug.LogError("Some function not remove temp value from lua stack. You should fix it.");
-            errorReported = LuaDLL.lua_gettop(luaState.L);
-        }
-
-        luaState.checkRef();
-        LuaTimer.tick(Time.deltaTime);
-    }
-
-    void bindAll(IntPtr l)
-    {
-        Assembly[] ams = AppDomain.CurrentDomain.GetAssemblies();
-
-        List<Type> bindlist = new List<Type>();
-        foreach (Assembly a in ams)
-        {
-            Type[] ts = a.GetExportedTypes();
-            foreach (Type t in ts)
-            {
-                if (t.GetCustomAttributes(typeof(LuaBinderAttribute), false).Length > 0)
-                {
-                    bindlist.Add(t);
-                }
-            }
-        }
-
-        bindlist.Sort(new System.Comparison<Type>((Type a, Type b) =>
-        {
-            LuaBinderAttribute la = (LuaBinderAttribute)a.GetCustomAttributes(typeof(LuaBinderAttribute), false)[0];
-            LuaBinderAttribute lb = (LuaBinderAttribute)b.GetCustomAttributes(typeof(LuaBinderAttribute), false)[0];
-
-            return la.order.CompareTo(lb.order);
-        })
-        );
-
-        foreach (Type t in bindlist)
-        {
-            t.GetMethod("Bind").Invoke(null, new object[] { l });
-        }
-    }
-
-    public IntPtr handle
-    {
-        get
-        {
-            return luaState.handle;
-        }
-    }
-
+    
     string script = "";
     byte[] luaLoader(string fn)
     {
@@ -130,46 +60,25 @@ public class Lua /*: IDisposable */{
     }
 
     public object DoFile(string fn)
-    {
-        Debug.Log(fn);
+    {        
          return luaState.doFile(fn); 
     }
-
+  
     public object this[string path]
     {
         get
-        {
-            return luaState.getObject(path);
+        {           
+            return luaState[path];
         }
         set
         {
-            luaState.setObject(path, value);
+            luaState[path]=value;
         }
-    }
+    }   
 
     public LuaFunction  GetFunction(string fn)
     {
         return luaState.getFunction(fn);
-    }
-
-    private static HashSet<string> ms_includedFiles = new HashSet<string>();
-
-
-
-    [MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-    internal static int import(IntPtr l)
-    {
-
-        LuaDLL.luaL_checktype(l, 1, LuaTypes.LUA_TSTRING);
-        string str = LuaDLL.lua_tostring(l, 1);
-        if (ms_includedFiles.Contains (str)) {
-            return 0;
-        } else {
-            ms_includedFiles.Add (str);
-        }
-        return LuaState.import (l);
-
-    }
-    
+    }    
 
 }

@@ -28,10 +28,10 @@ function mole.Start()
 	to=Vector3(original.x,original.y+60,original.z)
   
 	image=gameObject:GetComponent("Image")
-    animator=gameObject:GetComponent("Animator")
+	animator=gameObject:GetComponent("Animator")
 
-	local _text2d=MoleAtlas:LoadAsset("Assets/Atlas/MoleAtlas/Mole04.png")
-	sprite4=Sprite.Create(_text2d,Rect(0,0,56,79),Vector2(0.5,0.5))
+	local _text2d=MoleAtlas:LoadAsset("Assets/Atlas/MoleAtlas/Mole04.png")	
+	sprite4=_text2d--Sprite.Create(_text2d,Rect(0,0,56,79),Vector2(0.5,0.5))
 
 	EventListener.Get(gameObject).onClick=mole.onClick
 
@@ -75,11 +75,11 @@ end
 function mole.comeOut()
 	--眨眼睛动画
 	if(animator.enabled==false) then      
-        animator.enabled=true
+		animator.enabled=true
    	end
 
-   	mole.status=1
-   	
+   	mole.status=1  	
+	
 
 	--鼹鼠出洞
 	--参数方法:setOrientToPath(true):setEase(LeanTweenType.easeInQuart):setDelay(1):setOnComplete(oncomplete):setOnCompleteParam(paths) --setOrientToPath(true):

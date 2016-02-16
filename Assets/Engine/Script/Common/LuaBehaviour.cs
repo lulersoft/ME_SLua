@@ -20,8 +20,7 @@ public class LuaBehaviour : MonoBehaviour
     public bool usingUpdate = false;
     [System.NonSerialized]
     public bool usingFixedUpdate = false;
-    protected bool isLuaReady = false;
-
+    
     protected LuaTable table;
 
     //保存的lua 数据存取
@@ -80,31 +79,45 @@ public class LuaBehaviour : MonoBehaviour
         table["transform"] = transform;
         table["gameObject"] = gameObject;
 
-        CallMethod("Start");
-
-        isLuaReady = true;
+        CallMethod("Start");       
     }
     //加载脚本文件
-    public void DoFile(string fn)
+    public void DoFile(string fn, System.Action complete=null)
     {
-        try
+        StartCoroutine(DoMeFile(fn, complete));        
+    }
+
+
+    IEnumerator DoMeFile(string fn, System.Action complete=null)
+    {
+        yield return new WaitForEndOfFrame();
+        while(env==null || !env.isReady)
         {
-            object chunk = env.DoFile(fn);           
-            if (chunk != null  && (chunk is LuaTable))
+            yield return new WaitForEndOfFrame();
+        }      
+
+        try
+        {            
+            object chunk = env.DoFile(fn);            
+
+            if (chunk != null && (chunk is LuaTable))
             {
-                setBehaviour((LuaTable)chunk); 
+                setBehaviour((LuaTable)chunk);
             }
-          
+
         }
         catch (System.Exception e)
-        {
-            isLuaReady = false;
+        {       
             Debug.LogError(FormatException(e), gameObject);
         }
+
+        if(complete!=null)
+        complete();
     }
+
     //获取绑定的lua脚本
     public LuaTable GetChunk()
-    {
+    {       
         return table;
     }
 

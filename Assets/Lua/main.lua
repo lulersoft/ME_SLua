@@ -47,14 +47,14 @@ function main.testdemo()
 	local game = GameObject("Performance")
 	--local lb = game:AddComponent(LuaBehaviour)
 	local lb = API.AddComponent(game,"LuaBehaviour")
-	lb:DoFile("demo/demo")
+	lb:DoFile("demo/demo",nil)
 end
 
 --打地鼠游戏
 function main.RunMoleGame( )
 	local game = GameObject("moleGame")
 	local lb = API.AddComponent(game,"LuaBehaviour")
-	lb:DoFile("demo/moleGame")
+	lb:DoFile("demo/moleGame",nil)
 end
 
 --检查更新

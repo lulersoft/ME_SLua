@@ -45,7 +45,7 @@ function demo.createCube(ii)
 	cube.name=tostring(ii)	
 	cube.transform.position = Vector3(10 + r * math.cos((ii + 10) * math.deg2rad), 10 + r * math.sin((ii + 10) * math.deg2rad), 10 + r * math.sin((ii + 10) * math.deg2rad))	
 	local lb = API.AddComponent(cube,LuaBehaviour)
-	lb:DoFile("demo/testui2")
+	lb:DoFile("demo/testui2",nil)
 end
 
 --[[

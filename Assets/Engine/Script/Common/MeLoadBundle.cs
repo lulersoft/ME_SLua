@@ -28,7 +28,7 @@ public class MeLoadBundle : MonoBehaviour {
                 string uri = API.AssetPath + "AssetBundles";
                 byte[] data = System.IO.File.ReadAllBytes(uri);
                 API.Encrypt(ref data);
-                AssetBundle assetbundle = AssetBundle.CreateFromMemoryImmediate(data);
+                AssetBundle assetbundle = AssetBundle.LoadFromMemory(data);
                 manifest = assetbundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
             }
             return _manifest;
@@ -63,7 +63,7 @@ public class MeLoadBundle : MonoBehaviour {
             data = System.IO.File.ReadAllBytes(API.AssetPath + fname);
 
             API.Encrypt(ref data);
-            bundle = AssetBundle.CreateFromMemoryImmediate(data); 
+            bundle = AssetBundle.LoadFromMemory(data); 
             BundleTable.Add(fname, bundle);
         }
         else
@@ -179,7 +179,7 @@ public class MeLoadBundle : MonoBehaviour {
         //资源解密
         API.Encrypt(ref data);
 
-        AssetBundle bundle = AssetBundle.CreateFromMemoryImmediate(data);
+        AssetBundle bundle = AssetBundle.LoadFromMemory(data);
 
         yield return new WaitForEndOfFrame();
 

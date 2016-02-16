@@ -13,7 +13,7 @@
 
 ##本框架需要以下条件
 
-1)unity3d 版本为 5.0以上
+1)unity3d 版本为 5.x以上
 
 2)slua项目 地址 https://github.com/pangweiwei/slua
 

@@ -42,7 +42,7 @@ public class API
             {
                 lua = new Lua();
                 //设置lua脚本文件查找路径
-                lua["package.path"] = lua["package.path"] + ";" + AssetRoot + "lua/?.lua;";
+                //lua["package.path"] = lua["package.path"] + ";" + AssetRoot + "lua/?.lua;";
             }
             return lua;
         }

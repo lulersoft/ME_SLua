@@ -194,11 +194,11 @@ function game.onLoadComplete(uri,bundle)
         	--local lb=moleGo:AddComponent("LuaBehaviour") --这个方法在unity 5.x已经过期
         	local lb = API.AddComponent(moleGo,"LuaBehaviour")
         	lb:SetEnv("MoleAtlas",MoleAtlas,true)
-        	lb:DoFile("demo/mole")
-
-        	--获取绑定的lua脚本
-        	local mole_script=lb:GetChunk()
-        	table.insert(moleArr,mole_script)        	
+        	lb:DoFile("demo/mole",function()
+			--获取绑定的lua脚本
+        		local mole_script=lb:GetChunk()		
+        		table.insert(moleArr,mole_script) 			
+			end)        	      	
 
  		end	
       
@@ -235,10 +235,11 @@ function game.Update()
 end
 
 
-function game.onTimer(source)	
+function game.onTimer(source)
+	
 	--切换为主线程执行
 	if gameOver==false then
-		game.moleComeOut()    
+		game.moleComeOut() 		
 	end
 end
 
@@ -246,8 +247,8 @@ end
 function game.moleComeOut()
 	
 	local idx=math.floor(8 * math.random())+1
-	local mole=moleArr[idx]
-		
+	local mole=moleArr[idx]	
+	
 	if mole and gameOver==false then
 		if mole.status==1 then
 			game.moleComeOut()

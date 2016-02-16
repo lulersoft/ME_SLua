@@ -5,10 +5,10 @@ AssetBundleManifest:
       Name: moleatlas.ab
       Dependencies: {}
     Info_1:
-      Name: molepre.ab
+      Name: gui.ab
       Dependencies:
         Dependency_0: moleatlas.ab
     Info_2:
-      Name: gui.ab
+      Name: molepre.ab
       Dependencies:
         Dependency_0: moleatlas.ab

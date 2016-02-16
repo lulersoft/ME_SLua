@@ -107,7 +107,7 @@ public class Activity : LuaBehaviour
             Debug.Log(log);
 
             //加载入口文件 main.lua
-            DoFile(_name);   
+            DoFile(_name,null);   
         }
     }
     void InitAsstes()
@@ -122,7 +122,7 @@ public class Activity : LuaBehaviour
         }
         else
         {
-            DoFile(_name); 
+            DoFile(_name,null); 
         }
     }
     //重置框架,相当于重新启动游戏
