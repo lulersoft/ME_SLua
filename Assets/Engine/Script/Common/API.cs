@@ -105,6 +105,8 @@ public class API
             string target = "webplayer";
 #if UNITY_STANDALONE_WIN
             target = "standalonewindows";
+#elif UNITY_STANDALONE_OSX
+			target = "standaloneosxuniversal";
 #elif UNITY_IPHONE
             target = "ios";
 #elif UNITY_ANDROID
