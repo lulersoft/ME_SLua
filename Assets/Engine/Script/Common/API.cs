@@ -577,7 +577,14 @@ public class API
             MeLoadBundle.self.UnLoadBundle(key);
         }
     }
-
+    //停止加载携程，请在有使用动态加载的脚本的OnDestroy内调用
+    public static void StopAllLoadBundle()
+    {
+        if (MeLoadBundle.self != null)
+        {
+            MeLoadBundle.self.StopAllCoroutines();
+        }
+    }
 
     #region 消息中心
     //添加消息侦听
