@@ -300,9 +300,12 @@ public class MePackager
     public static BuildTarget GetTargetPlatform()
     {
         BuildTarget target = BuildTarget.Android;
-#if UNITY_STANDALONE
-        Debug.Log("build for win");
-        target = BuildTarget.StandaloneWindows;
+#if UNITY_STANDALONE_WIN
+		Debug.Log("build for win");
+		target = "standalonewindows";
+#elif UNITY_STANDALONE_OSX
+        Debug.Log("build for Mac");
+        target = BuildTarget.StandaloneOSXUniversal;
 #elif UNITY_IPHONE
 		Debug.Log ("build for ios");
 			target = BuildTarget.iOS;
