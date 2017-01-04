@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1630691852
+CRC: 639068213
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: f3858a061fc0b5717bac05229f59ba65
+    Hash: 590cce037880079df7b7f9a96c9a0ac0
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 7f8539d3e72f960253c83ab8ac5760d9
+    Hash: c4e2a88059115257f076181849c60a4f
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -22,11 +22,13 @@ ClassTypes:
 - Class: 111
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-- Class: 114
-  Script: {fileID: 1980459831, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-- Class: 114
   Script: {fileID: -619905303, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 1077351063, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 1997211142, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+- Class: 114
+  Script: {fileID: 1392445389, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
   Script: {fileID: 1301386320, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
@@ -34,11 +36,9 @@ ClassTypes:
 - Class: 114
   Script: {fileID: -98529514, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
-  Script: {fileID: 1077351063, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
-- Class: 114
   Script: {fileID: 708705254, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 114
-  Script: {fileID: 1997211142, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  Script: {fileID: 1980459831, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -54,4 +54,4 @@ ClassTypes:
 Assets:
 - Assets/Builds/Demo/Prefab/GUI.prefab
 Dependencies:
-- E:/project/ME_SLua_Local/Assets/Builds/AssetBundles/moleatlas.ab
+- D:/project/me_slua/Assets/Builds/AssetBundles/moleatlas.ab

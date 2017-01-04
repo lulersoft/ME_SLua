@@ -7,7 +7,7 @@ using System.Net;
 using SLua;
 using System.ComponentModel;
 using System.Text;
-using LuaInterface;
+
 
 /// <summary>
 /// LuaBehaviour

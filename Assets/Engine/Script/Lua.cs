@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using LuaInterface;
 using SLua;
 using System;
 using System.IO;

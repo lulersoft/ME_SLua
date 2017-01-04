@@ -9,7 +9,6 @@ using ICSharpCode.SharpZipLib.Zip;
 using System.IO;
 using System.ComponentModel;
 using System.Security.Cryptography;
-using LuaInterface;
 using BestHTTP;
 using SLua;
 
